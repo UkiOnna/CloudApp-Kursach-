@@ -6,21 +6,25 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace ClientCloud
 {
    public class ClientWork
     {
-        private string name;
         private Socket chatSocket;
         private IPEndPoint endPoint;
         public bool IsConnect { get; set; }
+        public string Name { get; set; }
+        public bool IsKey { get; set; }
 
         public ClientWork()
         {
             chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3535);
-
+            IsKey = false;
             try
             {
                 chatSocket.Connect(endPoint);
@@ -55,12 +59,12 @@ namespace ClientCloud
             await ThrowLetter(messg,key);
         }
 
+
         public void CloseConnect()
         {
             ThrowLetter("4","");
             IsConnect = false;
             chatSocket.Close();
-            Console.WriteLine("Отсоединение от чата");
         }
 
         public async void GetMessage()
@@ -72,23 +76,36 @@ namespace ClientCloud
         {
             return Task.Run(() =>
             {
-                while (IsConnect)
+                try
                 {
-                    int bytes;
-                    byte[] buffer = new byte[1024];
-
-                    StringBuilder stringBuilder = new StringBuilder();
-                    do
+                    while (IsConnect)
                     {
-                        bytes = chatSocket.Receive(buffer);
-                        stringBuilder.Append(Encoding.Default.GetString(buffer, 0, bytes));
-                    }
-                    while (chatSocket.Available > 0);
+                        int bytes;
+                        byte[] buffer = new byte[1024];
 
-                    if(stringBuilder.ToString()=="GetKey false")
-                    {
-                        System.Windows.MessageBox.Show("Вы ввели неверный ключ");
+                        StringBuilder stringBuilder = new StringBuilder();
+                        do
+                        {
+                            bytes = chatSocket.Receive(buffer);
+                            stringBuilder.Append(Encoding.Default.GetString(buffer, 0, bytes));
+                        }
+                        while (chatSocket.Available > 0);
+
+                        if (stringBuilder.ToString() == "GetKey false")
+                        {
+                            MessageBox.Show("Вы ввели неверный ключ");
+                        }
+                        else
+                        {
+                            IsKey = true;
+                            MessageBox.Show("Ключ прошел проверку!");
+                            Name = stringBuilder.ToString();
+                        }
                     }
+                }
+                catch(SocketException ex)
+                {
+                    MessageBox.Show(ex.Message);
                 }
             });
         }

@@ -16,23 +16,18 @@ using System.Windows.Shapes;
 namespace ClientCloud
 {
     /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
+    /// Логика взаимодействия для MainPage.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainPage : Page
     {
-        ClientWork client;
-        public MainWindow()
+        private Window window;
+        private ClientWork client;
+        public MainPage(Window window,ClientWork client)
         {
             InitializeComponent();
-            client = new ClientWork();
-            client.SendMessage("start", "");
-            client.GetMessage();
-            Content = new LogKey(this, client);
-        }
-
-        private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            client.CloseConnect();
+            this.window = window;
+            this.client = client;
+            welcome.Text += client.Name+"!";
         }
     }
 }

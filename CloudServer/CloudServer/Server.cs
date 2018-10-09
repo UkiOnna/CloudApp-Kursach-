@@ -15,7 +15,7 @@ namespace CloudServer
     {
         private string key;
         private List<Socket> sockets = new List<Socket>();
-        private bool isKeyRight = false;
+        private string name;
         public Server()
         {
 
@@ -39,6 +39,7 @@ namespace CloudServer
 
                         ClientJoin(socketIndex);
                     }
+                    
                 }
             }
             catch (SocketException ex)
@@ -47,6 +48,7 @@ namespace CloudServer
             }
             finally
             {
+                Console.WriteLine("Poka");
                 sok.Close();
                 for (int i = 0; i < sockets.Count; i++)
                 {
@@ -82,20 +84,35 @@ namespace CloudServer
                         }
                         else if (newMessage.Command == "4")
                         {
-                            Console.WriteLine("Завершение");
+                            Console.WriteLine("Пока");
+                            sockets[sokIndx].Shutdown(SocketShutdown.Both);
+                            sockets.RemoveAt(sokIndx);
                         }
 
                         else if (newMessage.Command == "GetKey")
                         {
-                            Console.WriteLine("Получен ключ");
+                            
                             key = newMessage.Key;
 
-                            var task = Task.Run(dfd);
-                            if (isKeyRight == false)
+                            try
                             {
+                                var task = Task.Run(dfd);
+                                task.Wait();
+                                Console.WriteLine("Получен ключ");
+                                newMessage.Key = "";
+                                newMessage.Command = name;
+                                sockets[0].Send(Encoding.Default.GetBytes(newMessage.Command + "" + newMessage.Key));
+                            }
+                            catch (System.AggregateException)
+                            {
+                                Console.WriteLine("Неверный ключ");
                                 newMessage.Key = "false";
                                 sockets[0].Send(Encoding.Default.GetBytes(newMessage.Command + " " + newMessage.Key));
                             }
+                           
+                            
+                                
+                            
 
 
 
@@ -120,9 +137,13 @@ namespace CloudServer
 
                     }
                 }
-                catch (Exception ex)
+                catch (SocketException ex)
                 {
                     Console.WriteLine(ex.Message);
+                }
+                catch(ArgumentOutOfRangeException ex)
+                {
+                    
                 }
             });
         }
@@ -133,7 +154,7 @@ namespace CloudServer
             {
                 var id = await dropBox.Users.GetCurrentAccountAsync();
                 Console.WriteLine(id.Name.DisplayName);
-                isKeyRight = true;
+                name=id.Name.DisplayName;
                 //Здесь в базу данных айди логин пользователя
             }
         }
