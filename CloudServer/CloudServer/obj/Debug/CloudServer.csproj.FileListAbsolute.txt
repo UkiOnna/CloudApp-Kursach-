@@ -22,3 +22,15 @@ C:\Users\СикировТ\Desktop\CloudApp\CloudServer\CloudServer\obj\Debug\Clo
 C:\Users\СикировТ\Desktop\CloudApp\CloudServer\CloudServer\obj\Debug\CloudServer.csproj.CopyComplete
 C:\Users\СикировТ\Desktop\CloudApp\CloudServer\CloudServer\obj\Debug\CloudServer.exe
 C:\Users\СикировТ\Desktop\CloudApp\CloudServer\CloudServer\obj\Debug\CloudServer.pdb
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\bin\Debug\CloudServer.exe.config
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\bin\Debug\CloudServer.exe
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\bin\Debug\CloudServer.pdb
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\bin\Debug\Dropbox.Api.dll
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\bin\Debug\Newtonsoft.Json.dll
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\bin\Debug\Dropbox.Api.xml
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\bin\Debug\Newtonsoft.Json.xml
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\obj\Debug\CloudServer.csprojAssemblyReference.cache
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\obj\Debug\CloudServer.csproj.CoreCompileInputs.cache
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\obj\Debug\CloudServer.csproj.CopyComplete
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\obj\Debug\CloudServer.exe
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\obj\Debug\CloudServer.pdb

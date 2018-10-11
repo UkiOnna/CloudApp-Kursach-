@@ -4,11 +4,11 @@
 winexe
 C#
 .cs
-C:\Users\СикировТ\Source\Repos\CloudApp-Kursach-\ClientCloud\ClientCloud\obj\Debug\
+C:\Users\СикировТ\Source\Repos\CloudApp-Kursach-\ClientCloud\ClientCloud\obj\Release\
 ClientCloud
 none
 false
-DEBUG;TRACE
+TRACE
 C:\Users\СикировТ\Source\Repos\CloudApp-Kursach-\ClientCloud\ClientCloud\App.xaml
 3-1707407740
 
@@ -16,5 +16,5 @@ C:\Users\СикировТ\Source\Repos\CloudApp-Kursach-\ClientCloud\ClientCloud
 14-337344414
 LogKey.xaml;MainPage.xaml;MainWindow.xaml;
 
-False
+True
 

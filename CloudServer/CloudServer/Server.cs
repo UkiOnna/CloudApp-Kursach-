@@ -65,90 +65,91 @@ namespace CloudServer
                 {
                     while (true)
                     {
-                        int bytes;
-                        byte[] buffer = new byte[1024];
-                        StringBuilder stringBuilder = new StringBuilder();
-
-                        do
+                        if (sockets.Count > 0)
                         {
-                            bytes = sockets[sokIndx].Receive(buffer);
-                            stringBuilder.Append(Encoding.Default.GetString(buffer));
-                        }
-                        while (sockets[sokIndx].Available > 0);
+                            int bytes;
+                            byte[] buffer = new byte[1024];
+                            StringBuilder stringBuilder = new StringBuilder();
 
-                        Message newMessage = JsonConvert.DeserializeObject<Message>(stringBuilder.ToString());
-                        if (newMessage.Command == "start")
-                        {
-                            Console.WriteLine("Присоединено");
-
-                        }
-                        else if (newMessage.Command == "4")
-                        {
-                            Console.WriteLine("Пока");
-                            sockets[sokIndx].Shutdown(SocketShutdown.Both);
-                            sockets.RemoveAt(sokIndx);
-                        }
-
-                        else if (newMessage.Command == "GetKey")
-                        {
-                            
-                            key = newMessage.Key;
-
-                            try
+                            do
                             {
-                                var task = Task.Run(dfd);
-                                task.Wait();
-                                Console.WriteLine("Получен ключ");
-                                newMessage.Key = "";
-                                newMessage.Command = name;
-                                sockets[0].Send(Encoding.Default.GetBytes(newMessage.Command + "" + newMessage.Key));
+                                bytes = sockets[sokIndx].Receive(buffer);
+                                stringBuilder.Append(Encoding.Default.GetString(buffer));
                             }
-                            catch (System.AggregateException)
+                            while (sockets[sokIndx].Available > 0);
+
+
+                            Message newMessage = JsonConvert.DeserializeObject<Message>(stringBuilder.ToString());
+                            if (newMessage.Command == "start")
                             {
-                                Console.WriteLine("Неверный ключ");
-                                newMessage.Key = "false";
-                                sockets[0].Send(Encoding.Default.GetBytes(newMessage.Command + " " + newMessage.Key));
+                                Console.WriteLine("Присоединено");
+
                             }
-                           
-                            
-                                
-                            
+                            else if (newMessage.Command == "4")
+                            {
+                                Console.WriteLine("Пока");
+                                sockets[sokIndx].Shutdown(SocketShutdown.Both);
+                                sockets.RemoveAt(sokIndx);
+                            }
 
 
+
+
+                            else if (newMessage.Command == "GetKey")
+                            {
+
+                                key = newMessage.Key;
+
+                                try
+                                {
+                                    var task = Task.Run(CheckKey);
+                                    task.Wait();
+                                    Console.WriteLine("Получен ключ");
+                                    newMessage.Key = "";
+                                    newMessage.Command = name;
+                                    sockets[0].Send(Encoding.Default.GetBytes(newMessage.Command + "" + newMessage.Key));
+                                }
+                                catch (System.AggregateException)
+                                {
+                                    Console.WriteLine("Неверный ключ");
+                                    newMessage.Key = "false";
+                                    sockets[0].Send(Encoding.Default.GetBytes(newMessage.Command + " " + newMessage.Key));
+                                }
+
+                            }
+
+                            //else if(newMessage.Command=="GetKey")
+                            //{
+                            //    Console.WriteLine("Пользователь " + newMessage.Name + " отправил сообщение");
+                            //    for (int i = 0; i < sockets.Count; i++)
+                            //    {
+                            //        if (i != sokIndx)
+                            //        {
+                            //            sockets[i].Send(Encoding.Default.GetBytes(newMessage.Name + ": " + newMessage.Letter));
+                            //        }
+                            //    }
+                            //}
+
+                            else
+                            {
+
+                            }
 
                         }
-
-                        //else if(newMessage.Command=="GetKey")
-                        //{
-                        //    Console.WriteLine("Пользователь " + newMessage.Name + " отправил сообщение");
-                        //    for (int i = 0; i < sockets.Count; i++)
-                        //    {
-                        //        if (i != sokIndx)
-                        //        {
-                        //            sockets[i].Send(Encoding.Default.GetBytes(newMessage.Name + ": " + newMessage.Letter));
-                        //        }
-                        //    }
-                        //}
-
-                        else
-                        {
-
-                        }
-
                     }
                 }
                 catch (SocketException ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
-                catch(ArgumentOutOfRangeException ex)
+                catch (ArgumentOutOfRangeException ex)
                 {
-                    
+
                 }
             });
         }
 
-        public async Task dfd()
+        public async Task CheckKey()
         {
             using (var dropBox = new DropboxClient(key))
             {
@@ -156,6 +157,23 @@ namespace CloudServer
                 Console.WriteLine(id.Name.DisplayName);
                 name=id.Name.DisplayName;
                 //Здесь в базу данных айди логин пользователя
+            }
+        }
+
+        public async Task CheckFiles()
+        {
+            using (var dropBox = new DropboxClient(key))
+            {
+                var list = await dropBox.Files.ListFolderAsync(string.Empty);
+                foreach (var item in list.Entries.Where(i => i.IsFolder))
+                {
+                    Console.WriteLine("D  {0}/", item.Name);
+                }
+
+                foreach (var item in list.Entries.Where(i => i.IsFile))
+                {
+                    Console.WriteLine("F{0,8} {1}", item.AsFile.Size, item.Name);
+                }
             }
         }
 
