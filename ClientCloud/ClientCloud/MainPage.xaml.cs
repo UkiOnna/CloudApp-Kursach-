@@ -29,5 +29,14 @@ namespace ClientCloud
             this.client = client;
             welcome.Text += client.Name+"!";
         }
+
+        private void GetFiles(object sender, RoutedEventArgs e)
+        {
+           Task task= client.SendMessage("GetFiles", "");
+            task.Wait();
+            // window.Content = new MainPage(window, client);
+            FilesWindow w = new FilesWindow(client);
+            w.Show();
+        }
     }
 }

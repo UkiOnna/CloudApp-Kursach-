@@ -16,9 +16,10 @@ namespace CloudServer
         private string key;
         private List<Socket> sockets = new List<Socket>();
         private string name;
+        private List<string> fileWays;
         public Server()
         {
-
+            fileWays = new List<string>();
         }
 
         public void BeginToDo(Socket sok)
@@ -99,23 +100,37 @@ namespace CloudServer
                             {
 
                                 key = newMessage.Key;
+                                List<string> answer = new List<string>();
 
                                 try
                                 {
                                     var task = Task.Run(CheckKey);
                                     task.Wait();
                                     Console.WriteLine("Получен ключ");
-                                    newMessage.Key = "";
+                                    newMessage.Key = "GetKey true";
                                     newMessage.Command = name;
-                                    sockets[0].Send(Encoding.Default.GetBytes(newMessage.Command + "" + newMessage.Key));
+                                    answer.Add(newMessage.Key);
+                                    answer.Add(newMessage.Command);
+                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
                                 }
                                 catch (System.AggregateException)
                                 {
                                     Console.WriteLine("Неверный ключ");
                                     newMessage.Key = "false";
-                                    sockets[0].Send(Encoding.Default.GetBytes(newMessage.Command + " " + newMessage.Key));
+                                    answer.Add(newMessage.Command + " " + newMessage.Key);
+                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
                                 }
 
+                            }
+
+                            else if (newMessage.Command == "GetFiles")
+                            {
+                                DropBoxFacade facade = new DropBoxFacade(key);
+                                fileWays.Add("fileList");
+                                var task = facade.LoadAll();
+                                task.Wait();
+                                DisplayAll(facade.Folders.First(), 0);
+                                sockets[0].Send(ConvertList.ListToByteArray(fileWays));
                             }
 
                             //else if(newMessage.Command=="GetKey")
@@ -160,21 +175,31 @@ namespace CloudServer
             }
         }
 
-        public async Task CheckFiles()
-        {
-            using (var dropBox = new DropboxClient(key))
-            {
-                var list = await dropBox.Files.ListFolderAsync(string.Empty);
-                foreach (var item in list.Entries.Where(i => i.IsFolder))
-                {
-                    Console.WriteLine("D  {0}/", item.Name);
-                }
 
-                foreach (var item in list.Entries.Where(i => i.IsFile))
+        public void DisplayAll(DropBoxFolder folder, int offset)
+        {
+            if (folder == null)
+            {
+                return;
+            }
+
+            foreach (var element in folder.Elements)
+            {
+                if (element.IsFile)
                 {
-                    Console.WriteLine("F{0,8} {1}", item.AsFile.Size, item.Name);
+                    fileWays.Add(new String(' ', offset) + "[File]" + element.Name);
+                }
+                else
+                {
+                    fileWays.Add(new String(' ', offset) + "[Folder]" + element.Name);
+                }
+                if (element.IsFolder)
+                {
+                    DisplayAll(element as DropBoxFolder, offset + 2);
                 }
             }
+            
+            
         }
 
     }

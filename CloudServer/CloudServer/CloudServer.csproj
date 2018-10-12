@@ -48,6 +48,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConvertList.cs" />
+    <Compile Include="DropBoxElement.cs" />
+    <Compile Include="DropBoxFacade.cs" />
+    <Compile Include="DropBoxFile.cs" />
+    <Compile Include="DropBoxFolder.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -19,7 +19,7 @@ namespace ClientCloud
         public bool IsConnect { get; set; }
         public string Name { get; set; }
         public bool IsKey { get; set; }
-
+        public List<string> fileList { get; set; }
         public ClientWork()
         {
             chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -54,15 +54,18 @@ namespace ClientCloud
         }
 
 
-        public async void SendMessage(string messg,string key)
+        public Task SendMessage(string messg,string key)
         {
-            await ThrowLetter(messg,key);
+            return Task.Run(async () => {
+                await ThrowLetter(messg,key);
+            });
         }
 
 
         public void CloseConnect()
         {
-            ThrowLetter("4","");
+           Task task= ThrowLetter("4","");
+            task.Wait();
             IsConnect = false;
             chatSocket.Close();
         }
@@ -81,28 +84,34 @@ namespace ClientCloud
                     while (IsConnect)
                     {
                         int bytes;
-                        byte[] buffer = new byte[1024];
+                        byte[] buffer = new byte[90000000];
 
-                        StringBuilder stringBuilder = new StringBuilder();
+                        List<string> answer = new List<string>();
                         do
                         {
                             bytes = chatSocket.Receive(buffer);
-                            stringBuilder.Append(Encoding.Default.GetString(buffer, 0, bytes));
+                            //answer.Append(Encoding.Default.GetString(buffer, 0, bytes));
+                           answer=ConvertList.ByteArrayToList(buffer);
                         }
                         while (chatSocket.Available > 0);
 
-                        if (stringBuilder.ToString() == "GetKey false")
+                        if (answer.First() == "GetKey false")
                         {
                             MessageBox.Show("Вы ввели неверный ключ");
                         }
-                        else
+                        else if(answer.First()=="GetKey true")
                         {
                             IsKey = true;
                             MessageBox.Show("Ключ прошел проверку!");
-                            Name = stringBuilder.ToString();
+                            Name = answer[1];
+                        }
+                        else if (answer.First()=="fileList")
+                        {
+                            fileList = answer;
                         }
                     }
                 }
+                
                 catch(SocketException ex)
                 {
                     MessageBox.Show(ex.Message);

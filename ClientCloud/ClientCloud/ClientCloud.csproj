@@ -57,6 +57,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="FilesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="LogKey.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -74,6 +78,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ClientWork.cs" />
+    <Compile Include="ConvertList.cs" />
+    <Compile Include="FilesWindow.xaml.cs">
+      <DependentUpon>FilesWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LogKey.xaml.cs">
       <DependentUpon>LogKey.xaml</DependentUpon>
     </Compile>

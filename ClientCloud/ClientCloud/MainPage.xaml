@@ -10,7 +10,7 @@
 
     <Grid>
         <TextBlock Name="welcome" HorizontalAlignment="Left" Margin="186,10,0,0" TextWrapping="Wrap" Text="Добро пожаловать " VerticalAlignment="Top" Height="72" Width="389" FontSize="25"/>
-        <Button Content="Вывести мои файлы" HorizontalAlignment="Left" Margin="10,155,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Вывести мои файлы" HorizontalAlignment="Left" Margin="10,155,0,0" VerticalAlignment="Top" Width="136" Click="GetFiles"/>
 
     </Grid>
 </Page>
