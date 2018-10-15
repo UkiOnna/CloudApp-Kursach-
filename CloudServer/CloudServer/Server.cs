@@ -131,6 +131,7 @@ namespace CloudServer
                                 task.Wait();
                                 DisplayAll(facade.Folders.First(), 0);
                                 sockets[0].Send(ConvertList.ListToByteArray(fileWays));
+                                fileWays.Clear();
                             }
 
                             //else if(newMessage.Command=="GetKey")

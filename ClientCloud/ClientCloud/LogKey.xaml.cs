@@ -34,7 +34,9 @@ namespace ClientCloud
             InitializeComponent();
             this.window = window;
             this.client = client;
-            
+            keyEnter.Text = "6LauE3AGhBAAAAAAAAAAGTcpkyF9Dvq4NSHoJ7Cx-beAk8jZMZ7xHH8U3GExp2Va";
+
+
         }
 
         private void EnterKey(object sender, RoutedEventArgs e)

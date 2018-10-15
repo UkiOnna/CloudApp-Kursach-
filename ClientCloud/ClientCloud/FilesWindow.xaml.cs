@@ -25,14 +25,14 @@ namespace ClientCloud
             InitializeComponent();
             this.client = client;
             // listFiles.Items.Add client.fileList;
-            while (client.fileList == null)
-            {
-
-            }
+          
            for(int i = 1; i < client.fileList.Count; i++)
             {
                 listFiles.Items.Add(client.fileList[i]);
             }
         }
+
+
+        
     }
 }
