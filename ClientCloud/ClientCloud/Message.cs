@@ -10,5 +10,6 @@ namespace ClientCloud
     {
         public string Command { get; set; }
         public string Key { get; set; }
+        public string FileWay { get; set; }
     }
 }

@@ -86,3 +86,5 @@ C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.1\ClientCloud\ClientCloud\ob
 C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.1\ClientCloud\ClientCloud\obj\Debug\ClientCloud.csproj.CopyComplete
 C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.1\ClientCloud\ClientCloud\obj\Debug\ClientCloud.exe
 C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.1\ClientCloud\ClientCloud\obj\Debug\ClientCloud.pdb
+C:\Users\СикировТ\Desktop\CloudApp\ClientCloud\ClientCloud\obj\Debug\FilesWindow.g.cs
+C:\Users\СикировТ\Desktop\CloudApp\ClientCloud\ClientCloud\obj\Debug\FilesWindow.baml

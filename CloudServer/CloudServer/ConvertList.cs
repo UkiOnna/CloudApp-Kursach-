@@ -29,5 +29,25 @@ namespace CloudServer
             List<string> obj = (List<string>)binForm.Deserialize(memStream);
             return obj;
         }
+
+        public static byte[] FileWaysToByteArray(Dictionary<string,string> obj)
+        {
+            if (obj == null)
+                return null;
+            BinaryFormatter bf = new BinaryFormatter();
+            MemoryStream ms = new MemoryStream();
+            bf.Serialize(ms, obj);
+            return ms.ToArray();
+        }
+
+        public static Dictionary<string, string> ByteArrayToFileWays(byte[] arrBytes)
+        {
+            MemoryStream memStream = new MemoryStream();
+            BinaryFormatter binForm = new BinaryFormatter();
+            memStream.Write(arrBytes, 0, arrBytes.Length);
+            memStream.Seek(0, SeekOrigin.Begin);
+            Dictionary<string, string> obj = (Dictionary<string, string>)binForm.Deserialize(memStream);
+            return obj;
+        }
     }
 }

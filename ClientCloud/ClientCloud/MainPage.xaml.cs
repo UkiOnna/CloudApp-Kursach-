@@ -46,25 +46,20 @@ namespace ClientCloud
         {
             Thread newWindowThread = new Thread(new ThreadStart(() =>
             {
-                // Create and show the Window
                 Dispatcher.Invoke(() => loading.Visibility = Visibility.Visible);
                 while (client.fileList == null)
                 {
                 }
                 Dispatcher.Invoke(() => loading.Visibility = Visibility.Collapsed);
-               
-                //Thread t = Thread.CurrentThread;
-                //t.SetApartmentState(ApartmentState.STA);
-                //t.Start();
+
                 FilesWindow w = new FilesWindow(client);
                 w.Show();
-                // Start the Dispatcher Processing
-                System.Windows.Threading.Dispatcher.Run();
+                Dispatcher.Run();
             }));
             newWindowThread.SetApartmentState(ApartmentState.STA);
-            // Make the thread a background thread
+
             newWindowThread.IsBackground = true;
-            // Start the thread
+
             newWindowThread.Start();
 
 

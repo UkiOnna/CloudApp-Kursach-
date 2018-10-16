@@ -8,6 +8,7 @@
         Title="FilesWindow" Height="450" Width="800">
     <Grid>
         <ListBox Name="listFiles" HorizontalAlignment="Left" Height="296" Margin="10,43,0,0" VerticalAlignment="Top" Width="772"/>
+        <Button Content="Скачать" HorizontalAlignment="Left" Margin="10,370,0,0" VerticalAlignment="Top" Width="113" Click="DownloadClick"/>
 
     </Grid>
 </Window>

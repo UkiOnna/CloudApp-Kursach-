@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dropbox.Api;
+using System.IO;
 
 namespace CloudServer
 {
@@ -16,10 +17,12 @@ namespace CloudServer
         private string key;
         private List<Socket> sockets = new List<Socket>();
         private string name;
-        private List<string> fileWays;
+        private Dictionary<string,string> fileWays;
+        private string toFileSave;
+        private string fromFileDownload;
         public Server()
         {
-            fileWays = new List<string>();
+            fileWays = new Dictionary<string, string>();
         }
 
         public void BeginToDo(Socket sok)
@@ -84,7 +87,6 @@ namespace CloudServer
                             if (newMessage.Command == "start")
                             {
                                 Console.WriteLine("Присоединено");
-
                             }
                             else if (newMessage.Command == "4")
                             {
@@ -126,12 +128,21 @@ namespace CloudServer
                             else if (newMessage.Command == "GetFiles")
                             {
                                 DropBoxFacade facade = new DropBoxFacade(key);
-                                fileWays.Add("fileList");
+
+                                fileWays.Add("fileList", "");
                                 var task = facade.LoadAll();
                                 task.Wait();
                                 DisplayAll(facade.Folders.First(), 0);
-                                sockets[0].Send(ConvertList.ListToByteArray(fileWays));
+                                sockets[0].Send(ConvertList.FileWaysToByteArray(fileWays));
                                 fileWays.Clear();
+                            }
+
+                            else if (newMessage.Command == "DownloadFile")
+                            {
+                                fromFileDownload = newMessage.FileWay;
+                                toFileSave = newMessage.Key;
+                                var task = Task.Run(DownloadFile);
+                                task.Wait();
                             }
 
                             //else if(newMessage.Command=="GetKey")
@@ -188,19 +199,33 @@ namespace CloudServer
             {
                 if (element.IsFile)
                 {
-                    fileWays.Add(new String(' ', offset) + "[File]" + element.Name);
+                    fileWays.Add(new String(' ', offset) + "[File]" + element.Name, element.FullName);
                 }
                 else
                 {
-                    fileWays.Add(new String(' ', offset) + "[Folder]" + element.Name);
+                    fileWays.Add(new String(' ', offset) + "[Folder]" + element.Name, element.FullName); ;
                 }
                 if (element.IsFolder)
                 {
                     DisplayAll(element as DropBoxFolder, offset + 2);
                 }
             }
-            
-            
+        }
+
+        public async Task DownloadFile()
+        {
+            using (var dbx = new DropboxClient(key))
+            {
+                string folder = "";
+                string file = fromFileDownload;
+                using (var response = await dbx.Files.DownloadAsync(file))
+                {
+                    var s = response.GetContentAsByteArrayAsync();
+                    s.Wait();
+                    var d = s.Result;
+                    File.WriteAllBytes(toFileSave, d);
+                }
+            }
         }
 
     }

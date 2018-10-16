@@ -12,6 +12,7 @@
         <TextBlock Name="welcome" HorizontalAlignment="Left" Margin="186,10,0,0" TextWrapping="Wrap" Text="Добро пожаловать " VerticalAlignment="Top" Height="72" Width="389" FontSize="25"/>
         <Button Content="Вывести мои файлы" HorizontalAlignment="Left" Margin="10,78,0,0" VerticalAlignment="Top" Width="136" Click="GetFiles"/>
         <ProgressBar Name="loading" HorizontalAlignment="Left" Height="27" Margin="186,210,0,0" VerticalAlignment="Top" Visibility="Hidden" Width="404" IsIndeterminate="True"/>
+        <Button Content="Скачать" HorizontalAlignment="Left" Margin="10,124,0,0" VerticalAlignment="Top" Width="136"/>
 
     </Grid>
 </Page>

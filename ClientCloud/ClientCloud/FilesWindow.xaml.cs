@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,19 +21,52 @@ namespace ClientCloud
     public partial class FilesWindow : Window
     {
         private ClientWork client;
+        private string downloadPath;
         public FilesWindow(ClientWork client)
         {
             InitializeComponent();
             this.client = client;
-            // listFiles.Items.Add client.fileList;
           
-           for(int i = 1; i < client.fileList.Count; i++)
+           foreach(KeyValuePair<string,string> keyValue in client.fileList)
             {
-                listFiles.Items.Add(client.fileList[i]);
+                listFiles.Items.Add(keyValue.Key);
             }
         }
 
+        private void DownloadClick(object sender, RoutedEventArgs e)
+        {
+            if (listFiles.SelectedItem != null)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    downloadPath = saveFileDialog.FileName;
+                    var builder = new StringBuilder();
+                    builder.Append(downloadPath);
+                    builder.Replace(saveFileDialog.SafeFileName, string.Empty);
+                    downloadPath = builder.ToString();
+                }
+                else
+                {
+                    downloadPath = "";
+                }
+                string fileName = (string)listFiles.SelectedItem;
+                KeyValuePair<string, string> fileElement=new KeyValuePair<string, string>();
+                foreach (KeyValuePair<string, string> keyValue in client.fileList)
+                {
+                    if (fileName == keyValue.Key)
+                    {
+                        fileElement = keyValue;
+                    }
+                }
 
-        
+                Task task = client.SendMessage("DownloadFile", downloadPath+fileElement.Key,fileElement.Value);
+                task.Wait();
+            }
+            else
+            {
+                MessageBox.Show("Выберите файл который хотите скачать");
+            }
+        }
     }
 }

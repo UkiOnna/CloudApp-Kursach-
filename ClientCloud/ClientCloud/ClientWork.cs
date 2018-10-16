@@ -19,12 +19,14 @@ namespace ClientCloud
         public bool IsConnect { get; set; }
         public string Name { get; set; }
         public bool IsKey { get; set; }
-        public List<string> fileList { get; set; }
+        public Dictionary<string,string> fileList { get; set; }
+        private bool isStrings;
         public ClientWork()
         {
             chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3535);
             IsKey = false;
+            isStrings = true;
             try
             {
                 chatSocket.Connect(endPoint);
@@ -37,13 +39,13 @@ namespace ClientCloud
             }
         }
 
-        public Task ThrowLetter(string command,string key)
+        public Task ThrowLetter(string command,string key,string file)
         {
             return Task.Run(() =>
             {
                 try
                 {
-                    string serialized = JsonConvert.SerializeObject(new Message { Command = command, Key = key });
+                    string serialized = JsonConvert.SerializeObject(new Message { Command = command, Key = key,FileWay=file });
                     chatSocket.Send(Encoding.Default.GetBytes(serialized));
                 }
                 catch (SocketException ex)
@@ -54,17 +56,17 @@ namespace ClientCloud
         }
 
 
-        public Task SendMessage(string messg,string key)
+        public Task SendMessage(string messg,string key,string file="")
         {
             return Task.Run(async () => {
-                await ThrowLetter(messg,key);
+                await ThrowLetter(messg,key,file);
             });
         }
 
 
         public void CloseConnect()
         {
-           Task task= ThrowLetter("4","");
+           Task task= ThrowLetter("4","","");
             task.Wait();
             IsConnect = false;
             chatSocket.Close();
@@ -87,13 +89,24 @@ namespace ClientCloud
                         byte[] buffer = new byte[90000000];
 
                         List<string> answer = new List<string>();
+                        Dictionary<string, string> fileWays = new Dictionary<string, string>();
                         do
                         {
                             bytes = chatSocket.Receive(buffer);
                             //answer.Append(Encoding.Default.GetString(buffer, 0, bytes));
-                           answer=ConvertList.ByteArrayToList(buffer);
+                            if (isStrings)
+                            {
+                                answer = ConvertList.ByteArrayToList(buffer);
+                            }
+                            if (answer[0] == "false")
+                            {
+                                isStrings = false;
+                                fileWays = ConvertList.ByteArrayToFileWays(buffer);
+                            }
                         }
                         while (chatSocket.Available > 0);
+
+                        isStrings = true;
 
                         if (answer.First() == "GetKey false")
                         {
@@ -105,9 +118,9 @@ namespace ClientCloud
                             MessageBox.Show("Ключ прошел проверку!");
                             Name = answer[1];
                         }
-                        else if (answer.First()=="fileList")
+                        else if (fileWays.First().Key=="fileList")
                         {
-                            fileList = answer;
+                            fileList = fileWays;
                         }
                     }
                 }
