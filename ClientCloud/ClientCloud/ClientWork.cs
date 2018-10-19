@@ -21,12 +21,14 @@ namespace ClientCloud
         public bool IsKey { get; set; }
         public Dictionary<string,string> fileList { get; set; }
         private bool isStrings;
+        public string downloadSuccess { get; set; }
         public ClientWork()
         {
             chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3535);
             IsKey = false;
             isStrings = true;
+            downloadSuccess = null;
             try
             {
                 chatSocket.Connect(endPoint);
@@ -118,9 +120,23 @@ namespace ClientCloud
                             MessageBox.Show("Ключ прошел проверку!");
                             Name = answer[1];
                         }
+                        else if (answer.First() =="DownloadFile")
+                        {
+                            downloadSuccess = answer[1];
+                            MessageBox.Show(answer[1]);
+                            downloadSuccess = null;
+                        }
+                        else if (answer.First() == "UploadFile")
+                        {
+                            downloadSuccess = answer[1];
+                            MessageBox.Show(answer[1]);
+                            downloadSuccess = null;
+                        }
                         else if (fileWays.First().Key=="fileList")
                         {
+                            downloadSuccess = "ha";
                             fileList = fileWays;
+                            downloadSuccess = null;
                         }
                     }
                 }

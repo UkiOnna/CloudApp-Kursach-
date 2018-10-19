@@ -88,3 +88,27 @@ C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.1\ClientCloud\ClientCloud\ob
 C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.1\ClientCloud\ClientCloud\obj\Debug\ClientCloud.pdb
 C:\Users\СикировТ\Desktop\CloudApp\ClientCloud\ClientCloud\obj\Debug\FilesWindow.g.cs
 C:\Users\СикировТ\Desktop\CloudApp\ClientCloud\ClientCloud\obj\Debug\FilesWindow.baml
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\bin\Debug\ClientCloud.exe.config
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\bin\Debug\ClientCloud.exe
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\bin\Debug\ClientCloud.pdb
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\bin\Debug\Newtonsoft.Json.dll
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\bin\Debug\Newtonsoft.Json.xml
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\ClientCloud.csprojAssemblyReference.cache
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\FilesWindow.g.cs
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\LogKey.g.cs
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\MainPage.g.cs
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\MainWindow.g.cs
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\App.g.cs
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\ClientCloud_MarkupCompile.cache
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\ClientCloud_MarkupCompile.lref
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\FilesWindow.baml
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\LogKey.baml
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\MainPage.baml
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\MainWindow.baml
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\ClientCloud.g.resources
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\ClientCloud.Properties.Resources.resources
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\ClientCloud.csproj.GenerateResource.cache
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\ClientCloud.csproj.CoreCompileInputs.cache
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\ClientCloud.csproj.CopyComplete
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\ClientCloud.exe
+C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.2\ClientCloud\ClientCloud\obj\Debug\ClientCloud.pdb

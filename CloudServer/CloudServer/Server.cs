@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dropbox.Api;
 using System.IO;
+using Dropbox.Api.Files;
 
 namespace CloudServer
 {
@@ -139,10 +140,48 @@ namespace CloudServer
 
                             else if (newMessage.Command == "DownloadFile")
                             {
-                                fromFileDownload = newMessage.FileWay;
-                                toFileSave = newMessage.Key;
-                                var task = Task.Run(DownloadFile);
-                                task.Wait();
+                                List<string> answer = new List<string>();
+                                try
+                                {
+                                    fromFileDownload = newMessage.FileWay;
+                                    toFileSave = newMessage.Key;
+                                    var task = Task.Run(DownloadFile);
+                                    task.Wait();
+                                    answer.Add("DownloadFile");
+                                    answer.Add("Файл успешно скачан");
+                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                }
+                                catch(System.AggregateException)
+                                {
+                                    Console.WriteLine("Ошибка при скачивании");
+                                    newMessage.Key = "false";
+                                    answer.Add("DownloadFile");
+                                    answer.Add("При скачивании поизошла ошибка");
+                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                }
+                            }
+
+                            else if (newMessage.Command == "UploadFile")
+                            {
+                                List<string> answer = new List<string>();
+                                try
+                                {
+                                    fromFileDownload = newMessage.Key;
+                                    toFileSave = newMessage.FileWay;
+                                    var task = Task.Run(UploadFile);
+                                    task.Wait();
+                                    answer.Add("UploadFile");
+                                    answer.Add("Файл успешно загружен");
+                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                }
+                                catch (System.AggregateException)
+                                {
+                                    Console.WriteLine("Ошибка при загрузке,возможно вы выбрали не папку а файл для загрузки файла");
+                                    newMessage.Key = "false";
+                                    answer.Add("UploadFile");
+                                    answer.Add("Ошибка при загрузке,возможно вы выбрали не паку для загрузки файла");
+                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                }
                             }
 
                             //else if(newMessage.Command=="GetKey")
@@ -159,7 +198,6 @@ namespace CloudServer
 
                             else
                             {
-
                             }
 
                         }
@@ -200,10 +238,12 @@ namespace CloudServer
                 if (element.IsFile)
                 {
                     fileWays.Add(new String(' ', offset) + "[File]" + element.Name, element.FullName);
+                    Console.WriteLine(element.FullName);
                 }
                 else
                 {
                     fileWays.Add(new String(' ', offset) + "[Folder]" + element.Name, element.FullName); ;
+                    Console.WriteLine(element.FullName);
                 }
                 if (element.IsFolder)
                 {
@@ -225,6 +265,26 @@ namespace CloudServer
                     var d = s.Result;
                     File.WriteAllBytes(toFileSave, d);
                 }
+            }
+        }
+
+        public async Task UploadFile()
+        {
+            using (var dbx = new DropboxClient(key))
+            {
+                string file = fromFileDownload;
+                string folder = "/Public";
+                string filename = "dummytextfile.txt";
+                string url = "";
+                using (var mem = new MemoryStream(File.ReadAllBytes(file)))
+                {
+                    var updated = dbx.Files.UploadAsync(toFileSave, WriteMode.Overwrite.Instance, body: mem);
+                    updated.Wait();
+                    var tx = dbx.Sharing.CreateSharedLinkWithSettingsAsync(toFileSave);
+                    tx.Wait();
+                    url = tx.Result.Url;
+                }
+                Console.Write(url);
             }
         }
 

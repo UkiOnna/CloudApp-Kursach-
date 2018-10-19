@@ -7,8 +7,11 @@
         mc:Ignorable="d"
         Title="FilesWindow" Height="450" Width="800">
     <Grid>
-        <ListBox Name="listFiles" HorizontalAlignment="Left" Height="296" Margin="10,43,0,0" VerticalAlignment="Top" Width="772"/>
+        <ListBox Name="listFiles" Height="296" Margin="10,43,10,0" VerticalAlignment="Top"/>
         <Button Content="Скачать" HorizontalAlignment="Left" Margin="10,370,0,0" VerticalAlignment="Top" Width="113" Click="DownloadClick"/>
+        <ProgressBar Name="loading" Margin="247,188,247,193" Visibility="Hidden" IsIndeterminate="True"/>
+        <Button Content="Загрузить" HorizontalAlignment="Left" Margin="321,370,0,0" VerticalAlignment="Top" Width="113" Click="UploadClick"/>
+        <Button Content="Обновить" HorizontalAlignment="Left" Margin="632,370,0,0" VerticalAlignment="Top" Width="113" Click="RefreshClick"/>
 
     </Grid>
 </Window>
