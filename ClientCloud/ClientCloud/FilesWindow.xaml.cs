@@ -83,7 +83,6 @@ namespace ClientCloud
                 {
                 }
                 Dispatcher.Invoke(() => loading.Visibility = Visibility.Hidden);
-
                 Dispatcher.Run();
             }));
 
@@ -136,10 +135,10 @@ namespace ClientCloud
 
         private void RefreshClick(object sender, RoutedEventArgs e)
         {
+            listFiles.Items.Clear();
             Task task = client.SendMessage("GetFiles", "");
             task.Wait();
             Downloading();
-            listFiles.Items.Clear();
             foreach (KeyValuePair<string, string> keyValue in client.fileList)
             {
                 listFiles.Items.Add(keyValue.Key);

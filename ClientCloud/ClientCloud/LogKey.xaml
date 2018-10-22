@@ -12,7 +12,7 @@
         <TextBlock Name="text" HorizontalAlignment="Left" Margin="316,173,0,0" TextWrapping="Wrap" Text="Введите ключ от DropBox" VerticalAlignment="Top"/>
         <TextBox Name="keyEnter" Height="23" Margin="147,194,147,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
         <Button Name="buttonKey" Content="Проверить" HorizontalAlignment="Left" Margin="345,236,0,0" VerticalAlignment="Top" Width="75" Click="EnterKey"/>
-        <Button Content="Далее>>" HorizontalAlignment="Left" Margin="578,236,0,0" VerticalAlignment="Top" Width="75" Click="NextPage"/>
+        <ProgressBar Name="loading" HorizontalAlignment="Left" Height="27" Margin="186,210,0,0" VerticalAlignment="Top" Visibility="Hidden" Width="404" IsIndeterminate="True"/>
 
     </Grid>
 </Page>

@@ -18,17 +18,21 @@ namespace ClientCloud
         private IPEndPoint endPoint;
         public bool IsConnect { get; set; }
         public string Name { get; set; }
-        public bool IsKey { get; set; }
+        public bool? IsKey { get; set; }
         public Dictionary<string,string> fileList { get; set; }
         private bool isStrings;
         public string downloadSuccess { get; set; }
+        public string refreshSuccess { get; set; }
+        public string uploadSuccess { get; set; }
         public ClientWork()
         {
             chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3535);
-            IsKey = false;
+            IsKey = null;
             isStrings = true;
             downloadSuccess = null;
+            uploadSuccess = null;
+            refreshSuccess = null;
             try
             {
                 chatSocket.Connect(endPoint);
@@ -112,12 +116,12 @@ namespace ClientCloud
 
                         if (answer.First() == "GetKey false")
                         {
+                            IsKey = false;
                             MessageBox.Show("Вы ввели неверный ключ");
                         }
                         else if(answer.First()=="GetKey true")
                         {
-                            IsKey = true;
-                            MessageBox.Show("Ключ прошел проверку!");
+                            SendMessage("GetFiles", "");
                             Name = answer[1];
                         }
                         else if (answer.First() =="DownloadFile")
@@ -134,9 +138,10 @@ namespace ClientCloud
                         }
                         else if (fileWays.First().Key=="fileList")
                         {
-                            downloadSuccess = "ha";
+                           refreshSuccess = "ha";
                             fileList = fileWays;
-                            downloadSuccess = null;
+                            refreshSuccess = null;
+                            IsKey = true;
                         }
                     }
                 }

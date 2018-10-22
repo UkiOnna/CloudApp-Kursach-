@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace ClientCloud
 {
@@ -48,8 +49,11 @@ namespace ClientCloud
             }
             else
             {
-                client.SendMessage("GetKey", key);
-            }
+                client.IsKey = null;
+                Task task = client.SendMessage("GetKey", key);
+                task.Wait();
+                CreatingPage();
+            }       
 
         }
 
@@ -58,16 +62,27 @@ namespace ClientCloud
             MessageBox.Show("Вы ввели неверный ключ");
         }
 
-        private void NextPage(object sender, RoutedEventArgs e)
+        private void CreatingPage()
         {
-            if (client.IsKey)
+            Thread newWindowThread = new Thread(new ThreadStart(() =>
             {
-                window.Content = new MainPage(window, client);
-            }
-            else
-            {
-                Ex();
-            }
+                Dispatcher.Invoke(() => loading.Visibility = Visibility.Visible);
+                while (client.IsKey == null)
+                {
+                }
+                Dispatcher.Invoke(() => loading.Visibility = Visibility.Hidden);
+                if (client.IsKey == true)
+                {
+                    Dispatcher.Invoke(() => window.Content = new MainPage(window, client));
+                }
+                Dispatcher.Run();
+            }));
+
+            newWindowThread.SetApartmentState(ApartmentState.STA);
+
+            newWindowThread.IsBackground = true;
+
+            newWindowThread.Start();
         }
     }
 
