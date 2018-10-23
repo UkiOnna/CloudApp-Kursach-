@@ -27,15 +27,16 @@ namespace ClientCloud
         private Window window;
         private string key;
         private ClientWork client;
- 
 
 
-        public LogKey(Window window,ClientWork client)
+
+        public LogKey(Window window, ClientWork client)
         {
             InitializeComponent();
             this.window = window;
             this.client = client;
             keyEnter.Text = "6LauE3AGhBAAAAAAAAAAGTcpkyF9Dvq4NSHoJ7Cx-beAk8jZMZ7xHH8U3GExp2Va";
+            buttonKey.IsEnabled = true;
 
 
         }
@@ -53,7 +54,7 @@ namespace ClientCloud
                 Task task = client.SendMessage("GetKey", key);
                 task.Wait();
                 CreatingPage();
-            }       
+            }
 
         }
 
@@ -69,10 +70,13 @@ namespace ClientCloud
                 Dispatcher.Invoke(() => loading.Visibility = Visibility.Visible);
                 while (client.IsKey == null)
                 {
+                    client.isWorking = true;
+                    Dispatcher.Invoke(() => buttonKey.IsEnabled = false);
                 }
                 Dispatcher.Invoke(() => loading.Visibility = Visibility.Hidden);
                 if (client.IsKey == true)
                 {
+                    client.isWorking = false;
                     Dispatcher.Invoke(() => window.Content = new MainPage(window, client));
                 }
                 Dispatcher.Run();

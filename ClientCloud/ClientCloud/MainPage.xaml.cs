@@ -34,6 +34,7 @@ namespace ClientCloud
             this.client = client;
             welcome.Text += client.Name + "!";
             loading.Visibility = Visibility.Hidden;
+            doButtons(true);
             Refreshing();
         }
 
@@ -59,7 +60,9 @@ namespace ClientCloud
                             fileElement = keyValue;
                         }
                     }
-                    Task task = client.SendMessage("DownloadFile", fileForUpload + fileElement.Key, fileElement.Value);
+                    string fileNameForDownload = fileElement.Key.Trim();
+                    fileNameForDownload = fileNameForDownload.Remove(0, 6);
+                    Task task = client.SendMessage("DownloadFile", fileForUpload + fileNameForDownload, fileElement.Value);
                     task.Wait();
                     Downloading();
                 }
@@ -82,8 +85,12 @@ namespace ClientCloud
                 Dispatcher.Invoke(() => loading.Visibility = Visibility.Visible);
                 while (client.downloadSuccess == null)
                 {
+                    client.isWorking = true;
+                    Dispatcher.Invoke(() => doButtons(false));
                 }
                 Dispatcher.Invoke(() => loading.Visibility = Visibility.Hidden);
+                Dispatcher.Invoke(() => doButtons(true));
+                client.isWorking = false;
                 Dispatcher.Run();
             }));
 
@@ -101,9 +108,14 @@ namespace ClientCloud
                 Dispatcher.Invoke(() => loading.Visibility = Visibility.Visible);
                 while (client.refreshSuccess == null)
                 {
+                    Dispatcher.Invoke(() => doButtons(false));
+                    client.isWorking = true;
                 }
                 Dispatcher.Invoke(() => loading.Visibility = Visibility.Hidden);
+                Dispatcher.Invoke(() => doButtons(true));
+                client.isWorking = false;
                 Dispatcher.Invoke(() => Refreshing());
+                
                 Dispatcher.Run();
             }));
 
@@ -166,42 +178,18 @@ namespace ClientCloud
         {
             foreach (KeyValuePair<string, string> keyValue in client.fileList)
             {
+                if(keyValue.Key!="fileList")
                 listFiles.Items.Add(keyValue.Key);
             }
         }
 
+        public void doButtons(bool value)
+        {
+            downloadButton.IsEnabled = value;
+            uploadButton.IsEnabled = value;
+            refreshButton.IsEnabled = value;
+        }
 
-
-        //private void GetFiles(object sender, RoutedEventArgs e)
-        //{
-        //    Task task = client.SendMessage("GetFiles", "");
-        //    task.Wait();
-        //    StartingOpen();
-        //    // window.Content = new MainPage(window, client);
-        //}
-
-        //public async void StartingOpen()
-        //{
-        //    Thread newWindowThread = new Thread(new ThreadStart(() =>
-        //    {
-        //        Dispatcher.Invoke(() => loading.Visibility = Visibility.Visible);
-        //        while (client.fileList == null)
-        //        {
-        //        }
-        //        Dispatcher.Invoke(() => loading.Visibility = Visibility.Collapsed);
-
-        //        FilesWindow w = new FilesWindow(client);
-        //        w.Show();
-        //        Dispatcher.Run();
-        //    }));
-        //    newWindowThread.SetApartmentState(ApartmentState.STA);
-
-        //    newWindowThread.IsBackground = true;
-
-        //    newWindowThread.Start();
-
-
-        //}
 
     }
 }

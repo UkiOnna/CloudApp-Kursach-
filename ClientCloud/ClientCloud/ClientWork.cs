@@ -24,8 +24,10 @@ namespace ClientCloud
         public string downloadSuccess { get; set; }
         public string refreshSuccess { get; set; }
         public string uploadSuccess { get; set; }
+        public bool isWorking { get; set; }
         public ClientWork()
         {
+            isWorking = false;
             chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3535);
             IsKey = null;
@@ -64,6 +66,10 @@ namespace ClientCloud
 
         public Task SendMessage(string messg,string key,string file="")
         {
+            if (messg == "GetFiles")
+            {
+                refreshSuccess = null;
+            }
             return Task.Run(async () => {
                 await ThrowLetter(messg,key,file);
             });
@@ -140,7 +146,6 @@ namespace ClientCloud
                         {
                            refreshSuccess = "ha";
                             fileList = fileWays;
-                            refreshSuccess = null;
                             IsKey = true;
                         }
                     }
