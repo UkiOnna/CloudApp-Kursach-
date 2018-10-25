@@ -23,7 +23,6 @@ namespace ClientCloud
         private bool isStrings;
         public string downloadSuccess { get; set; }
         public string refreshSuccess { get; set; }
-        public string uploadSuccess { get; set; }
         public bool isWorking { get; set; }
         public ClientWork()
         {
@@ -33,7 +32,6 @@ namespace ClientCloud
             IsKey = null;
             isStrings = true;
             downloadSuccess = null;
-            uploadSuccess = null;
             refreshSuccess = null;
             try
             {
@@ -66,10 +64,8 @@ namespace ClientCloud
 
         public Task SendMessage(string messg,string key,string file="")
         {
-            if (messg == "GetFiles")
-            {
-                refreshSuccess = null;
-            }
+            downloadSuccess = null;
+            refreshSuccess = null;
             return Task.Run(async () => {
                 await ThrowLetter(messg,key,file);
             });
@@ -105,7 +101,6 @@ namespace ClientCloud
                         do
                         {
                             bytes = chatSocket.Receive(buffer);
-                            //answer.Append(Encoding.Default.GetString(buffer, 0, bytes));
                             if (isStrings)
                             {
                                 answer = ConvertList.ByteArrayToList(buffer);
@@ -134,13 +129,13 @@ namespace ClientCloud
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
-                            downloadSuccess = null;
+                            
                         }
                         else if (answer.First() == "UploadFile")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
-                            downloadSuccess = null;
+                            
                         }
                         else if (fileWays.First().Key=="fileList")
                         {

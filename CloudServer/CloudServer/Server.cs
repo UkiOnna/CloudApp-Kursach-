@@ -15,11 +15,11 @@ namespace CloudServer
 {
     public class Server
     {
-        private const string start = "start";
-        private const string getKey = "GetKey";
-        private const string getFiles = "GetFiles";
-        private const string downloadFile = "DownloadFile";
-        private const string uploadFile = "UploadFile";
+        private const string START = "start";
+        private const string GET_KEY = "GetKey";
+        private const string GET_FILES = "GetFiles";
+        private const string DOWNLOAD_FILE = "DownloadFile";
+        private const string UPLOAD_FILE = "UploadFile";
         private string key;
         private List<Socket> sockets = new List<Socket>();
         private string name;
@@ -90,7 +90,7 @@ namespace CloudServer
 
 
                             Message newMessage = JsonConvert.DeserializeObject<Message>(stringBuilder.ToString());
-                            if (newMessage.Command == start)
+                            if (newMessage.Command == START)
                             {
                                 Console.WriteLine("Присоединено");
                             }
@@ -104,7 +104,7 @@ namespace CloudServer
 
 
 
-                            else if (newMessage.Command == getKey)
+                            else if (newMessage.Command == GET_KEY)
                             {
 
                                 key = newMessage.Key;
@@ -131,7 +131,7 @@ namespace CloudServer
 
                             }
 
-                            else if (newMessage.Command == getFiles)
+                            else if (newMessage.Command == GET_FILES)
                             {
                                 DropBoxFacade facade = new DropBoxFacade(key);
 
@@ -143,7 +143,7 @@ namespace CloudServer
                                 fileWays.Clear();
                             }
 
-                            else if (newMessage.Command == downloadFile)
+                            else if (newMessage.Command == DOWNLOAD_FILE)
                             {
                                 List<string> answer = new List<string>();
                                 try
@@ -152,7 +152,7 @@ namespace CloudServer
                                     toFileSave = newMessage.Key;
                                     var task = Task.Run(DownloadFile);
                                     task.Wait();
-                                    answer.Add(downloadFile);
+                                    answer.Add(DOWNLOAD_FILE);
                                     answer.Add("Файл успешно скачан");
                                     sockets[0].Send(ConvertList.ListToByteArray(answer));
                                 }
@@ -160,13 +160,13 @@ namespace CloudServer
                                 {
                                     Console.WriteLine("Ошибка при скачивании");
                                     newMessage.Key = "false";
-                                    answer.Add(downloadFile);
+                                    answer.Add(DOWNLOAD_FILE);
                                     answer.Add("При скачивании поизошла ошибка");
                                     sockets[0].Send(ConvertList.ListToByteArray(answer));
                                 }
                             }
 
-                            else if (newMessage.Command == uploadFile)
+                            else if (newMessage.Command == UPLOAD_FILE)
                             {
                                 List<string> answer = new List<string>();
                                 try
@@ -175,7 +175,7 @@ namespace CloudServer
                                     toFileSave = newMessage.FileWay;
                                     var task = Task.Run(UploadFile);
                                     task.Wait();
-                                    answer.Add(uploadFile);
+                                    answer.Add(UPLOAD_FILE);
                                     answer.Add("Файл успешно загружен");
                                     sockets[0].Send(ConvertList.ListToByteArray(answer));
                                 }
@@ -183,7 +183,7 @@ namespace CloudServer
                                 {
                                     Console.WriteLine("Ошибка при загрузке,возможно вы выбрали не папку а файл для загрузки файла");
                                     newMessage.Key = "false";
-                                    answer.Add(uploadFile);
+                                    answer.Add(UPLOAD_FILE);
                                     answer.Add("Ошибка при загрузке,возможно вы выбрали не паку для загрузки файла");
                                     sockets[0].Send(ConvertList.ListToByteArray(answer));
                                 }
@@ -278,16 +278,16 @@ namespace CloudServer
             using (var dbx = new DropboxClient(key))
             {
                 string file = fromFileDownload;
-                string url = "";
+                //string url = "";
                 using (var mem = new MemoryStream(File.ReadAllBytes(file)))
                 {
                     var updated = dbx.Files.UploadAsync(toFileSave, WriteMode.Overwrite.Instance, body: mem);
                     updated.Wait();
-                    var tx = dbx.Sharing.CreateSharedLinkWithSettingsAsync(toFileSave);
-                    tx.Wait();
-                    url = tx.Result.Url;
+                    //var tx = dbx.Sharing.CreateSharedLinkWithSettingsAsync(toFileSave);
+                    //tx.Wait();
+                    //url = tx.Result.Url;
                 }
-                Console.Write(url);
+                //Console.WriteLine(url);
             }
         }
 
