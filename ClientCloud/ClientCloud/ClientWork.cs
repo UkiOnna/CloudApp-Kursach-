@@ -120,29 +120,40 @@ namespace ClientCloud
                             IsKey = false;
                             MessageBox.Show("Вы ввели неверный ключ");
                         }
+
                         else if(answer.First()=="GetKey true")
                         {
                             SendMessage("GetFiles", "");
                             Name = answer[1];
                         }
+
                         else if (answer.First() =="DownloadFile")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
                             
                         }
+
                         else if (answer.First() == "UploadFile")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
                             
                         }
+
+                        else if (answer.First() == "DeleteItem")
+                        {
+                            downloadSuccess = answer[1];
+                            MessageBox.Show(answer[1]);
+                        }
+
                         else if (fileWays.First().Key=="fileList")
                         {
                            refreshSuccess = "ha";
                             fileList = fileWays;
                             IsKey = true;
                         }
+                        
                     }
                 }
                 

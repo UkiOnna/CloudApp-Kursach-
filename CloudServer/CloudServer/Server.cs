@@ -20,12 +20,14 @@ namespace CloudServer
         private const string GET_FILES = "GetFiles";
         private const string DOWNLOAD_FILE = "DownloadFile";
         private const string UPLOAD_FILE = "UploadFile";
+        private const string DELETE_ITEM = "DeleteItem";
         private string key;
         private List<Socket> sockets = new List<Socket>();
         private string name;
         private Dictionary<string,string> fileWays;
         private string toFileSave;
         private string fromFileDownload;
+        private string itemNeedToDelete;
         public Server()
         {
             fileWays = new Dictionary<string, string>();
@@ -189,17 +191,29 @@ namespace CloudServer
                                 }
                             }
 
-                            //else if(newMessage.Command=="GetKey")
-                            //{
-                            //    Console.WriteLine("Пользователь " + newMessage.Name + " отправил сообщение");
-                            //    for (int i = 0; i < sockets.Count; i++)
-                            //    {
-                            //        if (i != sokIndx)
-                            //        {
-                            //            sockets[i].Send(Encoding.Default.GetBytes(newMessage.Name + ": " + newMessage.Letter));
-                            //        }
-                            //    }
-                            //}
+                            else if (newMessage.Command == DELETE_ITEM)
+                            {
+                                List<string> answer = new List<string>();
+                                try
+                                {
+                                    itemNeedToDelete = newMessage.Key;
+                                    var task = Task.Run(DeleteItem);
+                                    task.Wait();
+                                    answer.Add(DELETE_ITEM);
+                                    answer.Add("Файл удален");
+                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                    
+                                }
+                                catch (AggregateException)
+                                {
+                                    newMessage.Key = "false";
+                                    answer.Add(DELETE_ITEM);
+                                    answer.Add("Ошибка при удалении");
+                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                }
+                            }
+
+
 
                             else
                             {
@@ -278,16 +292,20 @@ namespace CloudServer
             using (var dbx = new DropboxClient(key))
             {
                 string file = fromFileDownload;
-                //string url = "";
                 using (var mem = new MemoryStream(File.ReadAllBytes(file)))
                 {
                     var updated = dbx.Files.UploadAsync(toFileSave, WriteMode.Overwrite.Instance, body: mem);
                     updated.Wait();
-                    //var tx = dbx.Sharing.CreateSharedLinkWithSettingsAsync(toFileSave);
-                    //tx.Wait();
-                    //url = tx.Result.Url;
                 }
-                //Console.WriteLine(url);
+            }
+        }
+
+        public async Task DeleteItem()
+        {
+            using (var dbx = new DropboxClient(key))
+            {
+                var updated = dbx.Files.DeleteV2Async(itemNeedToDelete, null);
+                updated.Wait();
             }
         }
 

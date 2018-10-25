@@ -51,12 +51,19 @@ namespace ClientCloud
 
         public static Dictionary<string, string> ByteArrayToFileWays(byte[] arrBytes)
         {
-            MemoryStream memStream = new MemoryStream();
-            BinaryFormatter binForm = new BinaryFormatter();
-            memStream.Write(arrBytes, 0, arrBytes.Length);
-            memStream.Seek(0, SeekOrigin.Begin);
-            Dictionary<string, string> obj = (Dictionary<string, string>)binForm.Deserialize(memStream);
-            return obj;
+            try
+            {
+                MemoryStream memStream = new MemoryStream();
+                BinaryFormatter binForm = new BinaryFormatter();
+                memStream.Write(arrBytes, 0, arrBytes.Length);
+                memStream.Seek(0, SeekOrigin.Begin);
+                Dictionary<string, string> obj = (Dictionary<string, string>)binForm.Deserialize(memStream);
+                return obj;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

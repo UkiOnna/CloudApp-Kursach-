@@ -27,7 +27,7 @@ namespace ClientCloud
         private Window window;
         private ClientWork client;
         private string fileForUpload;
-        public MainPage(Window window=null, ClientWork client=null)
+        public MainPage(Window window = null, ClientWork client = null)
         {
             InitializeComponent();
             this.window = window;
@@ -115,7 +115,7 @@ namespace ClientCloud
                 Dispatcher.Invoke(() => doButtons(true));
                 client.isWorking = false;
                 Dispatcher.Invoke(() => Refreshing());
-                
+
                 Dispatcher.Run();
             }));
 
@@ -178,8 +178,8 @@ namespace ClientCloud
         {
             foreach (KeyValuePair<string, string> keyValue in client.fileList)
             {
-                if(keyValue.Key!="fileList")
-                listFiles.Items.Add(keyValue.Key);
+                if (keyValue.Key != "fileList")
+                    listFiles.Items.Add(keyValue.Key);
             }
         }
 
@@ -188,8 +188,39 @@ namespace ClientCloud
             downloadButton.IsEnabled = value;
             uploadButton.IsEnabled = value;
             refreshButton.IsEnabled = value;
+            deleteButton.IsEnabled = value;
         }
 
+        private void listFilesMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            listFiles.SelectedIndex = -1;
+        }
 
+        private void DeleteFile(object sender, RoutedEventArgs e)
+        {
+            if (listFiles.SelectedItem != null)
+            {
+                var dialogResult = MessageBox.Show("Вы уверены что хотите удалить это?","Удаление", MessageBoxButton.YesNo);
+                if (dialogResult == MessageBoxResult.Yes)
+                {
+                    string fileName = (string)listFiles.SelectedItem;
+                    KeyValuePair<string, string> fileElement = new KeyValuePair<string, string>();
+                    foreach (KeyValuePair<string, string> keyValue in client.fileList)
+                    {
+                        if (fileName == keyValue.Key)
+                        {
+                            fileElement = keyValue;
+                        }
+                    }
+                    Task task = client.SendMessage("DeleteItem", fileElement.Value);
+                    task.Wait();
+                    Downloading();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выберите файл который хотите удалить");
+            }
+        }
     }
 }
