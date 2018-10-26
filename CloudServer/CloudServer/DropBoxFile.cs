@@ -9,7 +9,7 @@ namespace CloudServer
 {
    public class DropBoxFile:DropBoxElement
     {
-        public override Metadata Metadata => FileMetadata;
+        public override Metadata Metadata { get { return FileMetadata; } }
         public FileMetadata FileMetadata { get; private set; }
 
         public DropBoxFile(FileMetadata metadata)

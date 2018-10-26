@@ -67,17 +67,22 @@ namespace ClientCloud
         {
             Thread newWindowThread = new Thread(new ThreadStart(() =>
             {
-                Dispatcher.Invoke(() => loading.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => loading.IsBusy = true);
                 while (client.IsKey == null)
                 {
                     client.isWorking = true;
                     Dispatcher.Invoke(() => buttonKey.IsEnabled = false);
                 }
-                Dispatcher.Invoke(() => loading.Visibility = Visibility.Hidden);
+                Dispatcher.Invoke(() => loading.IsBusy=false);
                 if (client.IsKey == true)
                 {
                     client.isWorking = false;
                     Dispatcher.Invoke(() => window.Content = new MainPage(window, client));
+                }
+                else
+                {
+                    client.isWorking = false;
+                    Dispatcher.Invoke(() => buttonKey.IsEnabled = true);
                 }
                 Dispatcher.Run();
             }));

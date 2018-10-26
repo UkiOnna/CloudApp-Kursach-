@@ -21,6 +21,7 @@ namespace CloudServer
         private const string DOWNLOAD_FILE = "DownloadFile";
         private const string UPLOAD_FILE = "UploadFile";
         private const string DELETE_ITEM = "DeleteItem";
+        private const string CREATE_FOLDER = "CreateFolder";
         private string key;
         private List<Socket> sockets = new List<Socket>();
         private string name;
@@ -28,6 +29,7 @@ namespace CloudServer
         private string toFileSave;
         private string fromFileDownload;
         private string itemNeedToDelete;
+        private string folderName;
         public Server()
         {
             fileWays = new Dictionary<string, string>();
@@ -43,14 +45,14 @@ namespace CloudServer
                 sok.Listen(1);
                 while (true)
                 {
-                    if (sockets.Count < 1)
-                    {
+                    //if (sockets.Count < )
+                   // {
 
                         sockets.Add(sok.Accept());
                         int socketIndex = sockets.Count - 1;
 
                         ClientJoin(socketIndex);
-                    }
+                    //}
                     
                 }
             }
@@ -121,14 +123,14 @@ namespace CloudServer
                                     newMessage.Command = name;
                                     answer.Add(newMessage.Key);
                                     answer.Add(newMessage.Command);
-                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
                                 }
                                 catch (AggregateException)
                                 {
                                     Console.WriteLine("Неверный ключ");
                                     newMessage.Key = "false";
                                     answer.Add(newMessage.Command + " " + newMessage.Key);
-                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
                                 }
 
                             }
@@ -141,7 +143,7 @@ namespace CloudServer
                                 var task = facade.LoadAll();
                                 task.Wait();
                                 DisplayAll(facade.Folders.First(), 0);
-                                sockets[0].Send(ConvertList.FileWaysToByteArray(fileWays));
+                                sockets[sokIndx].Send(ConvertList.FileWaysToByteArray(fileWays));
                                 fileWays.Clear();
                             }
 
@@ -156,7 +158,7 @@ namespace CloudServer
                                     task.Wait();
                                     answer.Add(DOWNLOAD_FILE);
                                     answer.Add("Файл успешно скачан");
-                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
                                 }
                                 catch(AggregateException)
                                 {
@@ -164,7 +166,7 @@ namespace CloudServer
                                     newMessage.Key = "false";
                                     answer.Add(DOWNLOAD_FILE);
                                     answer.Add("При скачивании поизошла ошибка");
-                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
                                 }
                             }
 
@@ -179,7 +181,7 @@ namespace CloudServer
                                     task.Wait();
                                     answer.Add(UPLOAD_FILE);
                                     answer.Add("Файл успешно загружен");
-                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
                                 }
                                 catch (AggregateException)
                                 {
@@ -187,7 +189,7 @@ namespace CloudServer
                                     newMessage.Key = "false";
                                     answer.Add(UPLOAD_FILE);
                                     answer.Add("Ошибка при загрузке,возможно вы выбрали не паку для загрузки файла");
-                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
                                 }
                             }
 
@@ -201,7 +203,7 @@ namespace CloudServer
                                     task.Wait();
                                     answer.Add(DELETE_ITEM);
                                     answer.Add("Файл удален");
-                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
                                     
                                 }
                                 catch (AggregateException)
@@ -209,7 +211,29 @@ namespace CloudServer
                                     newMessage.Key = "false";
                                     answer.Add(DELETE_ITEM);
                                     answer.Add("Ошибка при удалении");
-                                    sockets[0].Send(ConvertList.ListToByteArray(answer));
+                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                }
+                            }
+
+                            else if (newMessage.Command == CREATE_FOLDER)
+                            {
+                                List<string> answer = new List<string>();
+                                try
+                                {
+                                    folderName = newMessage.Key;
+                                    var task = Task.Run(CreateFolder);
+                                    task.Wait();
+                                    answer.Add(CREATE_FOLDER);
+                                    answer.Add("Папка создана");
+                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+
+                                }
+                                catch (AggregateException)
+                                {
+                                    newMessage.Key = "false";
+                                    answer.Add(CREATE_FOLDER);
+                                    answer.Add("Ошибка при создании");
+                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
                                 }
                             }
 
@@ -240,7 +264,14 @@ namespace CloudServer
                 var id = await dropBox.Users.GetCurrentAccountAsync();
                 Console.WriteLine(id.Name.DisplayName);
                 name=id.Name.DisplayName;
-                //Здесь в базу данных айди логин пользователя
+
+                using (var context = new DropBoxContext())
+                {
+
+                    User user = new User { Login = id.Name.DisplayName, Key=key };
+                    context.Users.Add(user);
+                    context.SaveChanges();
+                }
             }
         }
 
@@ -305,6 +336,15 @@ namespace CloudServer
             using (var dbx = new DropboxClient(key))
             {
                 var updated = dbx.Files.DeleteV2Async(itemNeedToDelete, null);
+                updated.Wait();
+            }
+        }
+
+        public async Task CreateFolder()
+        {
+            using (var dbx = new DropboxClient(key))
+            {
+                var updated = dbx.Files.CreateFolderV2Async(folderName, true);
                 updated.Wait();
             }
         }

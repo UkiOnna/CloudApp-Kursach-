@@ -33,7 +33,6 @@ namespace ClientCloud
             this.window = window;
             this.client = client;
             welcome.Text += client.Name + "!";
-            loading.Visibility = Visibility.Hidden;
             doButtons(true);
             Refreshing();
         }
@@ -82,13 +81,13 @@ namespace ClientCloud
         {
             Thread newWindowThread = new Thread(new ThreadStart(() =>
             {
-                Dispatcher.Invoke(() => loading.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => loading.IsBusy = true);
                 while (client.downloadSuccess == null)
                 {
                     client.isWorking = true;
                     Dispatcher.Invoke(() => doButtons(false));
                 }
-                Dispatcher.Invoke(() => loading.Visibility = Visibility.Hidden);
+                Dispatcher.Invoke(() => loading.IsBusy=false);
                 Dispatcher.Invoke(() => doButtons(true));
                 client.isWorking = false;
                 Dispatcher.Run();
@@ -105,13 +104,13 @@ namespace ClientCloud
         {
             Thread newWindowThread = new Thread(new ThreadStart(() =>
             {
-                Dispatcher.Invoke(() => loading.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => loading.IsBusy = true);
                 while (client.refreshSuccess == null)
                 {
                     Dispatcher.Invoke(() => doButtons(false));
                     client.isWorking = true;
                 }
-                Dispatcher.Invoke(() => loading.Visibility = Visibility.Hidden);
+                Dispatcher.Invoke(() => loading.IsBusy = false);
                 Dispatcher.Invoke(() => doButtons(true));
                 client.isWorking = false;
                 Dispatcher.Invoke(() => Refreshing());
@@ -189,6 +188,7 @@ namespace ClientCloud
             uploadButton.IsEnabled = value;
             refreshButton.IsEnabled = value;
             deleteButton.IsEnabled = value;
+            createFolderButton.IsEnabled = value;
         }
 
         private void listFilesMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -221,6 +221,41 @@ namespace ClientCloud
             {
                 MessageBox.Show("Выберите файл который хотите удалить");
             }
+        }
+
+        private char[] letters = {'\\', '/', ':', '?',  '*',  '"', '|' };
+
+        private void createFolderButtonClick(object sender, RoutedEventArgs e)
+        {
+            FileNameWindow fileNameWindow = new FileNameWindow();
+
+            if (fileNameWindow.ShowDialog() == true)
+            {
+                if (fileNameWindow.FileName != string.Empty)
+                {
+                    if (!fileNameWindow.FileName.Any(symbol => letters.Any(sub => sub == symbol)))
+                    {
+                        string fileName = (string)listFiles.SelectedItem;
+                        KeyValuePair<string, string> fileElement = new KeyValuePair<string, string>();
+                        foreach (KeyValuePair<string, string> keyValue in client.fileList)
+                        {
+                            if (fileName == keyValue.Key)
+                            {
+                                fileElement = keyValue;
+                            }
+                        }
+                        Task task = client.SendMessage("CreateFolder", fileElement.Value + "/" + fileNameWindow.FileName);
+                        task.Wait();
+                        Downloading();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Недопустимое имя папки");
+                    }
+                    
+                }
+            }
+
         }
     }
 }

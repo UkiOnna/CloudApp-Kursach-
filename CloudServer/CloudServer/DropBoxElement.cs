@@ -13,7 +13,7 @@ namespace CloudServer
         public String FullName { get; protected set; }
         public abstract Metadata Metadata { get; }
 
-        public Boolean IsFile => Metadata.IsFile;
-        public Boolean IsFolder => Metadata.IsFolder;
+        public Boolean IsFile { get { return Metadata.IsFile; } }
+        public Boolean IsFolder { get { return Metadata.IsFolder; } }
     }
 }

@@ -3,19 +3,21 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
       xmlns:local="clr-namespace:ClientCloud"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="MainPage" MouseRightButtonDown="listFilesMouseRightButtonDown">
 
     <Grid>
+        
         <TextBlock Name="welcome" HorizontalAlignment="Left" Margin="470,10,0,0" TextWrapping="Wrap" Text="Добро пожаловать " VerticalAlignment="Top" Height="72" Width="320" FontSize="25" TextAlignment="Center"/>
         <ListBox Name="listFiles" Height="419" Margin="10,10,335,0" VerticalAlignment="Top" MouseRightButtonDown="listFilesMouseRightButtonDown"/>
-        <Button Name="downloadButton" Content="Скачать" HorizontalAlignment="Left" Margin="470,176,0,0" VerticalAlignment="Top" Width="307" Click="DownloadClick" Height="34" FontSize="20"/>
-        <Button Name="uploadButton" Content="Загрузить" HorizontalAlignment="Left" Margin="470,112,0,0" VerticalAlignment="Top" Width="307" Click="UploadClick" Height="34" FontSize="20"/>
-        <Button Name="refreshButton" Content="Обновить" HorizontalAlignment="Left" Margin="470,305,0,0" VerticalAlignment="Top" Width="307" Click="RefreshClick" Height="34" FontSize="20"/>
-        <ProgressBar Name="loading" HorizontalAlignment="Left" Height="27" Margin="186,210,0,0" VerticalAlignment="Top" Visibility="Hidden" Width="404" IsIndeterminate="True"/>
-        <Button Name="deleteButton" Content="Удалить" HorizontalAlignment="Left" Margin="470,242,0,0" VerticalAlignment="Top" Width="307" Click="DeleteFile" Height="34" FontSize="20"/>
-
+        <Button Name="downloadButton" Content="Скачать" HorizontalAlignment="Left" Margin="470,160,0,0" VerticalAlignment="Top" Width="307" Click="DownloadClick" Height="34" FontSize="20"/>
+        <Button Name="uploadButton" Content="Загрузить" HorizontalAlignment="Left" Margin="470,100,0,0" VerticalAlignment="Top" Width="307" Click="UploadClick" Height="34" FontSize="20"/>
+        <Button Name="refreshButton" Content="Обновить" HorizontalAlignment="Left" Margin="470,340,0,0" VerticalAlignment="Top" Width="307" Click="RefreshClick" Height="34" FontSize="20"/>
+        <Button Name="deleteButton" Content="Удалить" HorizontalAlignment="Left" Margin="470,220,0,0" VerticalAlignment="Top" Width="307" Click="DeleteFile" Height="34" FontSize="20"/>
+        <Button x:Name="createFolderButton" Content="Создать папку" HorizontalAlignment="Left" Margin="470,280,0,0" VerticalAlignment="Top" Width="307"  Height="34" FontSize="20" Click="createFolderButtonClick"/>
+        <xctk:BusyIndicator Name="loading" IsBusy="False" BusyContent="Пожалуйста подождите.."/>
     </Grid>
 </Page>

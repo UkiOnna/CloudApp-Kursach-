@@ -66,6 +66,7 @@ namespace ClientCloud
         {
             downloadSuccess = null;
             refreshSuccess = null;
+            IsKey = null;
             return Task.Run(async () => {
                 await ThrowLetter(messg,key,file);
             });
@@ -94,7 +95,7 @@ namespace ClientCloud
                     while (IsConnect)
                     {
                         int bytes;
-                        byte[] buffer = new byte[90000000];
+                        byte[] buffer = new byte[10000];
 
                         List<string> answer = new List<string>();
                         Dictionary<string, string> fileWays = new Dictionary<string, string>();
@@ -119,6 +120,7 @@ namespace ClientCloud
                         {
                             IsKey = false;
                             MessageBox.Show("Вы ввели неверный ключ");
+                            
                         }
 
                         else if(answer.First()=="GetKey true")
@@ -142,6 +144,11 @@ namespace ClientCloud
                         }
 
                         else if (answer.First() == "DeleteItem")
+                        {
+                            downloadSuccess = answer[1];
+                            MessageBox.Show(answer[1]);
+                        }
+                        else if (answer.First() == "CreateFolder")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
