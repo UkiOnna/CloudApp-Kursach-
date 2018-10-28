@@ -112,6 +112,11 @@ namespace CloudServer
                             {
 
                                 key = newMessage.Key;
+                                bool isSave = false;
+                                if (newMessage.FileWay == "true")
+                                {
+                                    isSave = true;
+                                }
                                 List<string> answer = new List<string>();
 
                                 try
@@ -120,6 +125,13 @@ namespace CloudServer
                                     task.Wait();
                                     Console.WriteLine("Получен ключ");
                                     newMessage.Key = "GetKey true";
+                                    using (var context = new DropBoxContext())
+                                    {
+                                        context.Users.ToList();
+                                        //User user = new User { Login = name, Key = key ,isSave=isSave};
+                                        //context.Users.Add(user);
+                                        //context.SaveChanges();
+                                    }
                                     newMessage.Command = name;
                                     answer.Add(newMessage.Key);
                                     answer.Add(newMessage.Command);
@@ -264,14 +276,6 @@ namespace CloudServer
                 var id = await dropBox.Users.GetCurrentAccountAsync();
                 Console.WriteLine(id.Name.DisplayName);
                 name=id.Name.DisplayName;
-
-                using (var context = new DropBoxContext())
-                {
-
-                    User user = new User { Login = id.Name.DisplayName, Key=key };
-                    context.Users.Add(user);
-                    context.SaveChanges();
-                }
             }
         }
 

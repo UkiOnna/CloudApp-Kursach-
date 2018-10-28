@@ -13,5 +13,6 @@ namespace CloudServer
         public int Id { get; set; }
         public string Login { get; set; }
         public string Key { get; set; }
+        public bool isSave { get; set; }
     }
 }
