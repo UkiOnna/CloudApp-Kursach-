@@ -27,7 +27,7 @@ namespace ClientCloud
         private Window window;
         private ClientWork client;
         private string fileForUpload;
-        public MainPage(Window window = null, ClientWork client = null)
+        public MainPage(Window window, ClientWork client)
         {
             InitializeComponent();
             this.window = window;

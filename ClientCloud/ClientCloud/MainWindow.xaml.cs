@@ -27,7 +27,7 @@ namespace ClientCloud
             client = new ClientWork();
             client.SendMessage("start", "");
             client.GetMessage();
-            Content = new LogKey(this, client);
+            Content = new LoginPage(this, client);
         }
 
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)

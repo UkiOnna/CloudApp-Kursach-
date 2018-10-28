@@ -5,8 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ClientCloud"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Closing="WindowClosing">
+        Title="MainWindow" Height="450" Width="800"  Closing="WindowClosing">
+    <Window.Background>
+        <ImageBrush ImageSource="Image/fon.jpg"></ImageBrush>
+    </Window.Background>
     <Grid>
-        
+
     </Grid>
 </Window>

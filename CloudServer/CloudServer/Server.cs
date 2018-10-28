@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Dropbox.Api;
 using System.IO;
 using Dropbox.Api.Files;
+using System.Data.Entity.Infrastructure;
 
 namespace CloudServer
 {
@@ -22,6 +23,8 @@ namespace CloudServer
         private const string UPLOAD_FILE = "UploadFile";
         private const string DELETE_ITEM = "DeleteItem";
         private const string CREATE_FOLDER = "CreateFolder";
+        private const string REGISTRATION = "Registration";
+        private const string LOGIN = "Login";
         private string key;
         private List<Socket> sockets = new List<Socket>();
         private string name;
@@ -30,9 +33,11 @@ namespace CloudServer
         private string fromFileDownload;
         private string itemNeedToDelete;
         private string folderName;
+        private List<string> answer;
         public Server()
         {
             fileWays = new Dictionary<string, string>();
+            answer = new List<string>();
         }
 
         public void BeginToDo(Socket sok)
@@ -40,7 +45,6 @@ namespace CloudServer
             try
             {
                 Console.WriteLine("Сервер работает");
-
 
                 sok.Listen(1);
                 while (true)
@@ -112,12 +116,6 @@ namespace CloudServer
                             {
 
                                 key = newMessage.Key;
-                                bool isSave = false;
-                                if (newMessage.FileWay == "true")
-                                {
-                                    isSave = true;
-                                }
-                                List<string> answer = new List<string>();
 
                                 try
                                 {
@@ -125,17 +123,11 @@ namespace CloudServer
                                     task.Wait();
                                     Console.WriteLine("Получен ключ");
                                     newMessage.Key = "GetKey true";
-                                    using (var context = new DropBoxContext())
-                                    {
-                                        context.Users.ToList();
-                                        //User user = new User { Login = name, Key = key ,isSave=isSave};
-                                        //context.Users.Add(user);
-                                        //context.SaveChanges();
-                                    }
                                     newMessage.Command = name;
                                     answer.Add(newMessage.Key);
                                     answer.Add(newMessage.Command);
                                     sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                    answer.Clear();
                                 }
                                 catch (AggregateException)
                                 {
@@ -143,6 +135,7 @@ namespace CloudServer
                                     newMessage.Key = "false";
                                     answer.Add(newMessage.Command + " " + newMessage.Key);
                                     sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                    answer.Clear();
                                 }
 
                             }
@@ -161,7 +154,6 @@ namespace CloudServer
 
                             else if (newMessage.Command == DOWNLOAD_FILE)
                             {
-                                List<string> answer = new List<string>();
                                 try
                                 {
                                     fromFileDownload = newMessage.FileWay;
@@ -171,6 +163,7 @@ namespace CloudServer
                                     answer.Add(DOWNLOAD_FILE);
                                     answer.Add("Файл успешно скачан");
                                     sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                    answer.Clear();
                                 }
                                 catch(AggregateException)
                                 {
@@ -179,12 +172,12 @@ namespace CloudServer
                                     answer.Add(DOWNLOAD_FILE);
                                     answer.Add("При скачивании поизошла ошибка");
                                     sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                    answer.Clear();
                                 }
                             }
 
                             else if (newMessage.Command == UPLOAD_FILE)
                             {
-                                List<string> answer = new List<string>();
                                 try
                                 {
                                     fromFileDownload = newMessage.Key;
@@ -194,6 +187,7 @@ namespace CloudServer
                                     answer.Add(UPLOAD_FILE);
                                     answer.Add("Файл успешно загружен");
                                     sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                    answer.Clear();
                                 }
                                 catch (AggregateException)
                                 {
@@ -202,12 +196,12 @@ namespace CloudServer
                                     answer.Add(UPLOAD_FILE);
                                     answer.Add("Ошибка при загрузке,возможно вы выбрали не паку для загрузки файла");
                                     sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                    answer.Clear();
                                 }
                             }
 
                             else if (newMessage.Command == DELETE_ITEM)
                             {
-                                List<string> answer = new List<string>();
                                 try
                                 {
                                     itemNeedToDelete = newMessage.Key;
@@ -216,7 +210,8 @@ namespace CloudServer
                                     answer.Add(DELETE_ITEM);
                                     answer.Add("Файл удален");
                                     sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    
+                                    answer.Clear();
+
                                 }
                                 catch (AggregateException)
                                 {
@@ -224,12 +219,12 @@ namespace CloudServer
                                     answer.Add(DELETE_ITEM);
                                     answer.Add("Ошибка при удалении");
                                     sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                    answer.Clear();
                                 }
                             }
 
                             else if (newMessage.Command == CREATE_FOLDER)
                             {
-                                List<string> answer = new List<string>();
                                 try
                                 {
                                     folderName = newMessage.Key;
@@ -238,6 +233,7 @@ namespace CloudServer
                                     answer.Add(CREATE_FOLDER);
                                     answer.Add("Папка создана");
                                     sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                    answer.Clear();
 
                                 }
                                 catch (AggregateException)
@@ -246,6 +242,76 @@ namespace CloudServer
                                     answer.Add(CREATE_FOLDER);
                                     answer.Add("Ошибка при создании");
                                     sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                    answer.Clear();
+                                }
+                            }
+
+                            else if (newMessage.Command == REGISTRATION)
+                            {
+                                try
+                                {
+
+                                    using (var context = new DropBoxContext())
+                                    {
+                                        if (context.Users.Any(item => item.Key == key)) throw new Exception();
+
+                                        User user = new User { Login = newMessage.Key, Key = key,Password=newMessage.FileWay };
+                                        context.Users.Add(user);
+                                        context.SaveChanges();
+                                        answer.Add(REGISTRATION + " " + "true");
+                                        answer.Add("Регистрация прошла успешно");
+                                        sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                        answer.Clear();
+
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine(e.Message);
+                                    answer.Add(REGISTRATION + " " + "false");
+                                    answer.Add("Ошибка при регистрации пользователя");
+                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                    answer.Clear();
+                                }
+                            }
+
+                            else if (newMessage.Command == LOGIN)
+                            {
+                                try
+                                {
+                                    bool isLoginSuccess = false;
+                                    using(var context=new DropBoxContext())
+                                    {
+                                        foreach (var item in context.Users)
+                                        {
+                                            if (item.Login == newMessage.Key && item.Password==newMessage.FileWay)
+                                            {
+                                                isLoginSuccess = true;
+                                                key = item.Key;
+                                            }
+                                        }
+                                    }
+
+                                    if (isLoginSuccess)
+                                    {
+                                        answer.Add(LOGIN + " " + "true");
+                                        sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                        answer.Clear();
+                                    }
+                                    else
+                                    {
+                                        throw new Exception();
+                                    }
+
+                                    
+                                }
+                                catch(Exception)
+                                {
+                                    
+                                    answer.Add(LOGIN + " " + "false");
+                                    answer.Add("Вы ввели нправильный логин или пароль");
+                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                    answer.Clear();
                                 }
                             }
 
@@ -291,12 +357,12 @@ namespace CloudServer
             {
                 if (element.IsFile)
                 {
-                    fileWays.Add(new String(' ', offset) + "[File]" + element.Name, element.FullName);
+                    fileWays.Add(new String(' ', offset) + "[File]" + element.Name, element.FullName+new string(' ',5)+"Изменено");
                     Console.WriteLine(element.FullName);
                 }
                 else
                 {
-                    fileWays.Add(new String(' ', offset) + "[Folder]" + element.Name, element.FullName); ;
+                    fileWays.Add(new String(' ', offset) + "[Folder]" + element.Name, element.FullName); 
                     Console.WriteLine(element.FullName);
                 }
                 if (element.IsFolder)

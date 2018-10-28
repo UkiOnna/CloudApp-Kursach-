@@ -104,3 +104,8 @@ C:\Users\СикировТ.CORP\Desktop\Clouds\Cloud1.2\CloudServer\CloudServer\o
 C:\Users\СикировТ.CORP\Desktop\Clouds\Cloud1.2\CloudServer\CloudServer\obj\Debug\CloudServer.csproj.CopyComplete
 C:\Users\СикировТ.CORP\Desktop\Clouds\Cloud1.2\CloudServer\CloudServer\obj\Debug\CloudServer.exe
 C:\Users\СикировТ.CORP\Desktop\Clouds\Cloud1.2\CloudServer\CloudServer\obj\Debug\CloudServer.pdb
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\bin\Debug\EntityFramework.dll
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\bin\Debug\EntityFramework.xml
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\СикировТ\source\repos\CloudApp-Kursach-\CloudServer\CloudServer\bin\Debug\ru\EntityFramework.resources.dll
