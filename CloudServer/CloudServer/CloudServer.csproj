@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandWork.cs" />
     <Compile Include="ConvertList.cs" />
     <Compile Include="DropBoxContext.cs" />
     <Compile Include="DropBoxElement.cs" />
