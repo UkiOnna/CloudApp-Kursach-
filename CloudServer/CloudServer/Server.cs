@@ -28,12 +28,13 @@ namespace CloudServer
         private string key;
         private List<Socket> sockets = new List<Socket>();
         private string name;
-        private Dictionary<string,string> fileWays;
+        private Dictionary<string, string> fileWays;
         private string toFileSave;
         private string fromFileDownload;
         private string itemNeedToDelete;
         private string folderName;
         private List<string> answer;
+        private object locker = new object();
         public Server()
         {
             fileWays = new Dictionary<string, string>();
@@ -49,15 +50,10 @@ namespace CloudServer
                 sok.Listen(1);
                 while (true)
                 {
-                    //if (sockets.Count < )
-                   // {
+                    sockets.Add(sok.Accept());
+                    int socketIndex = sockets.Count - 1;
 
-                        sockets.Add(sok.Accept());
-                        int socketIndex = sockets.Count - 1;
-
-                        ClientJoin(socketIndex);
-                    //}
-                    
+                    ClientJoin(socketIndex);
                 }
             }
             catch (SocketException ex)
@@ -83,6 +79,7 @@ namespace CloudServer
                 {
                     while (true)
                     {
+
                         if (sockets.Count > 0)
                         {
                             int bytes;
@@ -98,15 +95,24 @@ namespace CloudServer
 
 
                             Message newMessage = JsonConvert.DeserializeObject<Message>(stringBuilder.ToString());
+
                             if (newMessage.Command == START)
                             {
-                                Console.WriteLine("Присоединено");
+                                lock (locker)
+                                {
+                                    Console.WriteLine("Присоединено");
+                                    newMessage = null;
+                                }
                             }
                             else if (newMessage.Command == "4")
                             {
-                                Console.WriteLine("Пока");
-                                sockets[sokIndx].Shutdown(SocketShutdown.Both);
-                                sockets.RemoveAt(sokIndx);
+                                lock (locker)
+                                {
+                                    Console.WriteLine("Пока");
+                                    sockets[sokIndx].Shutdown(SocketShutdown.Both);
+                                    sockets.RemoveAt(sokIndx);
+                                    newMessage = null;
+                                }
                             }
 
 
@@ -114,204 +120,240 @@ namespace CloudServer
 
                             else if (newMessage.Command == GET_KEY)
                             {
-
-                                key = newMessage.Key;
-
-                                try
+                                lock (locker)
                                 {
-                                    var task = Task.Run(CheckKey);
-                                    task.Wait();
-                                    Console.WriteLine("Получен ключ");
-                                    newMessage.Key = "GetKey true";
-                                    newMessage.Command = name;
-                                    answer.Add(newMessage.Key);
-                                    answer.Add(newMessage.Command);
-                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    answer.Clear();
-                                }
-                                catch (AggregateException)
-                                {
-                                    Console.WriteLine("Неверный ключ");
-                                    newMessage.Key = "false";
-                                    answer.Add(newMessage.Command + " " + newMessage.Key);
-                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    answer.Clear();
+                                    key = newMessage.Key;
+
+                                    try
+                                    {
+                                        var task = Task.Run(CheckKey);
+                                        task.Wait();
+                                        Console.WriteLine("Получен ключ");
+                                        newMessage.Key = "GetKey true";
+                                        newMessage.Command = name;
+                                        answer.Add(newMessage.Key);
+                                        answer.Add(newMessage.Command);
+                                        sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                        answer.Clear();
+                                        newMessage = null;
+                                    }
+                                    catch (AggregateException)
+                                    {
+                                        Console.WriteLine("Неверный ключ");
+                                        newMessage.Key = "false";
+                                        answer.Add(newMessage.Command + " " + newMessage.Key);
+                                        sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                        answer.Clear();
+                                        newMessage = null;
+                                    }
                                 }
 
                             }
 
                             else if (newMessage.Command == GET_FILES)
                             {
-                                DropBoxFacade facade = new DropBoxFacade(key);
+                                lock (locker)
+                                {
+                                    DropBoxFacade facade = new DropBoxFacade(key);
 
-                                fileWays.Add("fileList", "");
-                                var task = facade.LoadAll();
-                                task.Wait();
-                                DisplayAll(facade.Folders.First(), 0);
-                                sockets[sokIndx].Send(ConvertList.FileWaysToByteArray(fileWays));
-                                fileWays.Clear();
+                                    fileWays.Add("fileList", "");
+                                    var task = facade.LoadAll();
+                                    task.Wait();
+                                    DisplayAll(facade.Folders.First(), 0);
+                                    sockets[sokIndx].Send(ConvertList.FileWaysToByteArray(fileWays));
+                                    fileWays.Clear();
+                                    newMessage = null;
+                                }
                             }
 
                             else if (newMessage.Command == DOWNLOAD_FILE)
                             {
-                                try
+                                lock (locker)
                                 {
-                                    fromFileDownload = newMessage.FileWay;
-                                    toFileSave = newMessage.Key;
-                                    var task = Task.Run(DownloadFile);
-                                    task.Wait();
-                                    answer.Add(DOWNLOAD_FILE);
-                                    answer.Add("Файл успешно скачан");
-                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    answer.Clear();
-                                }
-                                catch(AggregateException)
-                                {
-                                    Console.WriteLine("Ошибка при скачивании");
-                                    newMessage.Key = "false";
-                                    answer.Add(DOWNLOAD_FILE);
-                                    answer.Add("При скачивании поизошла ошибка");
-                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    answer.Clear();
+                                    try
+                                    {
+                                        fromFileDownload = newMessage.FileWay;
+                                        toFileSave = newMessage.Key;
+                                        var task = Task.Run(DownloadFile);
+                                        task.Wait();
+                                        answer.Add(DOWNLOAD_FILE);
+                                        answer.Add("Файл успешно скачан");
+                                        sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                        answer.Clear();
+                                        newMessage = null;
+                                    }
+                                    catch (AggregateException ex)
+                                    {
+                                        Console.WriteLine(ex.Message);
+                                        newMessage.Key = "false";
+                                        answer.Add(DOWNLOAD_FILE);
+                                        answer.Add("При скачивании поизошла ошибка");
+                                        sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                        answer.Clear();
+                                        newMessage = null;
+                                    }
                                 }
                             }
 
                             else if (newMessage.Command == UPLOAD_FILE)
                             {
-                                try
+                                lock (locker)
                                 {
-                                    fromFileDownload = newMessage.Key;
-                                    toFileSave = newMessage.FileWay;
-                                    var task = Task.Run(UploadFile);
-                                    task.Wait();
-                                    answer.Add(UPLOAD_FILE);
-                                    answer.Add("Файл успешно загружен");
-                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    answer.Clear();
-                                }
-                                catch (AggregateException)
-                                {
-                                    Console.WriteLine("Ошибка при загрузке,возможно вы выбрали не папку а файл для загрузки файла");
-                                    newMessage.Key = "false";
-                                    answer.Add(UPLOAD_FILE);
-                                    answer.Add("Ошибка при загрузке,возможно вы выбрали не паку для загрузки файла");
-                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    answer.Clear();
+                                    try
+                                    {
+                                        fromFileDownload = newMessage.Key;
+                                        toFileSave = newMessage.FileWay;
+                                        var task = Task.Run(UploadFile);
+                                        task.Wait();
+                                        answer.Add(UPLOAD_FILE);
+                                        answer.Add("Файл успешно загружен");
+                                        sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                        answer.Clear();
+                                        newMessage = null;
+                                    }
+                                    catch (AggregateException)
+                                    {
+                                        Console.WriteLine("Ошибка при загрузке,возможно вы выбрали не папку а файл для загрузки файла");
+                                        newMessage.Key = "false";
+                                        answer.Add(UPLOAD_FILE);
+                                        answer.Add("Ошибка при загрузке,возможно вы выбрали не паку для загрузки файла");
+                                        sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                        answer.Clear();
+                                        newMessage = null;
+                                    }
                                 }
                             }
 
                             else if (newMessage.Command == DELETE_ITEM)
                             {
-                                try
+                                lock (locker)
                                 {
-                                    itemNeedToDelete = newMessage.Key;
-                                    var task = Task.Run(DeleteItem);
-                                    task.Wait();
-                                    answer.Add(DELETE_ITEM);
-                                    answer.Add("Файл удален");
-                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    answer.Clear();
+                                    try
+                                    {
+                                        itemNeedToDelete = newMessage.Key;
+                                        var task = Task.Run(DeleteItem);
+                                        task.Wait();
+                                        answer.Add(DELETE_ITEM);
+                                        answer.Add("Файл удален");
+                                        sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                        answer.Clear();
+                                        newMessage = null;
 
-                                }
-                                catch (AggregateException)
-                                {
-                                    newMessage.Key = "false";
-                                    answer.Add(DELETE_ITEM);
-                                    answer.Add("Ошибка при удалении");
-                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    answer.Clear();
+                                    }
+                                    catch (AggregateException)
+                                    {
+                                        newMessage.Key = "false";
+                                        answer.Add(DELETE_ITEM);
+                                        answer.Add("Ошибка при удалении");
+                                        sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                        answer.Clear();
+                                        newMessage = null;
+                                    }
                                 }
                             }
 
                             else if (newMessage.Command == CREATE_FOLDER)
                             {
-                                try
+                                lock (locker)
                                 {
-                                    folderName = newMessage.Key;
-                                    var task = Task.Run(CreateFolder);
-                                    task.Wait();
-                                    answer.Add(CREATE_FOLDER);
-                                    answer.Add("Папка создана");
-                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    answer.Clear();
+                                    try
+                                    {
+                                        folderName = newMessage.Key;
+                                        var task = Task.Run(CreateFolder);
+                                        task.Wait();
+                                        answer.Add(CREATE_FOLDER);
+                                        answer.Add("Папка создана");
+                                        sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                        answer.Clear();
+                                        newMessage = null;
 
-                                }
-                                catch (AggregateException)
-                                {
-                                    newMessage.Key = "false";
-                                    answer.Add(CREATE_FOLDER);
-                                    answer.Add("Ошибка при создании");
-                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    answer.Clear();
+                                    }
+                                    catch (AggregateException)
+                                    {
+                                        newMessage.Key = "false";
+                                        answer.Add(CREATE_FOLDER);
+                                        answer.Add("Ошибка при создании");
+                                        sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                        answer.Clear();
+                                        newMessage = null;
+                                    }
                                 }
                             }
 
                             else if (newMessage.Command == REGISTRATION)
                             {
-                                try
+                                lock (locker)
                                 {
-
-                                    using (var context = new DropBoxContext())
+                                    try
                                     {
-                                        if (context.Users.Any(item => item.Key == key)) throw new Exception();
 
-                                        User user = new User { Login = newMessage.Key, Key = key,Password=newMessage.FileWay };
-                                        context.Users.Add(user);
-                                        context.SaveChanges();
-                                        answer.Add(REGISTRATION + " " + "true");
-                                        answer.Add("Регистрация прошла успешно");
+                                        using (var context = new DropBoxContext())
+                                        {
+                                            if (context.Users.Any(item => item.Key == key)) throw new Exception();
+
+                                            User user = new User { Login = newMessage.Key, Key = key, Password = newMessage.FileWay };
+                                            context.Users.Add(user);
+                                            context.SaveChanges();
+                                            answer.Add(REGISTRATION + " " + "true");
+                                            answer.Add("Регистрация прошла успешно");
+                                            sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                            answer.Clear();
+
+                                        }
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine(e.Message);
+                                        answer.Add(REGISTRATION + " " + "false");
+                                        answer.Add("Ошибка при регистрации пользователя");
                                         sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
                                         answer.Clear();
-
                                     }
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine(e.Message);
-                                    answer.Add(REGISTRATION + " " + "false");
-                                    answer.Add("Ошибка при регистрации пользователя");
-                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    answer.Clear();
                                 }
                             }
 
                             else if (newMessage.Command == LOGIN)
                             {
-                                try
+                                lock (locker)
                                 {
-                                    bool isLoginSuccess = false;
-                                    using(var context=new DropBoxContext())
+                                    try
                                     {
-                                        foreach (var item in context.Users)
+                                        bool isLoginSuccess = false;
+                                        using (var context = new DropBoxContext())
                                         {
-                                            if (item.Login == newMessage.Key && item.Password==newMessage.FileWay)
+                                            foreach (var item in context.Users)
                                             {
-                                                isLoginSuccess = true;
-                                                key = item.Key;
+                                                if (item.Login == newMessage.Key && item.Password == newMessage.FileWay)
+                                                {
+                                                    isLoginSuccess = true;
+                                                    key = item.Key;
+                                                }
                                             }
                                         }
-                                    }
 
-                                    if (isLoginSuccess)
+                                        if (isLoginSuccess)
+                                        {
+                                            answer.Add(LOGIN + " " + "true");
+                                            sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
+                                            answer.Clear();
+                                            newMessage = null;
+                                        }
+                                        else
+                                        {
+                                            throw new Exception();
+                                        }
+
+
+                                    }
+                                    catch (Exception)
                                     {
-                                        answer.Add(LOGIN + " " + "true");
+
+                                        answer.Add(LOGIN + " " + "false");
+                                        answer.Add("Вы ввели нправильный логин или пароль");
                                         sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
                                         answer.Clear();
+                                        newMessage = null;
                                     }
-                                    else
-                                    {
-                                        throw new Exception();
-                                    }
-
-                                    
-                                }
-                                catch(Exception)
-                                {
-                                    
-                                    answer.Add(LOGIN + " " + "false");
-                                    answer.Add("Вы ввели нправильный логин или пароль");
-                                    sockets[sokIndx].Send(ConvertList.ListToByteArray(answer));
-                                    answer.Clear();
                                 }
                             }
 
@@ -321,7 +363,10 @@ namespace CloudServer
                             {
                             }
 
+
+
                         }
+
                     }
                 }
                 catch (SocketException ex)
@@ -341,7 +386,7 @@ namespace CloudServer
             {
                 var id = await dropBox.Users.GetCurrentAccountAsync();
                 Console.WriteLine(id.Name.DisplayName);
-                name=id.Name.DisplayName;
+                name = id.Name.DisplayName;
             }
         }
 
@@ -357,12 +402,12 @@ namespace CloudServer
             {
                 if (element.IsFile)
                 {
-                    fileWays.Add(new String(' ', offset) + "[File]" + element.Name, element.FullName+new string(' ',5)+"Изменено");
+                    fileWays.Add(new String(' ', offset) + "[File]" + element.Name, element.FullName);
                     Console.WriteLine(element.FullName);
                 }
                 else
                 {
-                    fileWays.Add(new String(' ', offset) + "[Folder]" + element.Name, element.FullName); 
+                    fileWays.Add(new String(' ', offset) + "[Folder]" + element.Name, element.FullName);
                     Console.WriteLine(element.FullName);
                 }
                 if (element.IsFolder)
@@ -376,7 +421,7 @@ namespace CloudServer
         {
             using (var dbx = new DropboxClient(key))
             {
-                
+
                 string file = fromFileDownload;
                 using (var response = await dbx.Files.DownloadAsync(file))
                 {

@@ -26,6 +26,7 @@ namespace ClientCloud
         public string downloadSuccess { get; set; }
         public string refreshSuccess { get; set; }
         public bool isWorking { get; set; }
+
         public ClientWork()
         {
             isWorking = false;
@@ -51,6 +52,7 @@ namespace ClientCloud
 
         public Task ThrowLetter(string command, string key, string file)
         {
+
             return Task.Run(() =>
             {
                 try
@@ -62,6 +64,7 @@ namespace ClientCloud
                 {
                     Console.WriteLine(ex.Message);
                 }
+
             });
         }
 
@@ -106,6 +109,7 @@ namespace ClientCloud
 
                         List<string> answer = new List<string>();
                         Dictionary<string, string> fileWays = new Dictionary<string, string>();
+
                         do
                         {
                             bytes = chatSocket.Receive(buffer);
@@ -121,6 +125,8 @@ namespace ClientCloud
                         }
                         while (chatSocket.Available > 0);
 
+
+
                         isStrings = true;
 
                         if (answer.First() == "GetKey false")
@@ -133,7 +139,7 @@ namespace ClientCloud
                         else if (answer.First() == "GetKey true")
                         {
                             IsKey = true;
-                            
+
                         }
 
                         else if (answer.First() == "DownloadFile")
@@ -198,6 +204,10 @@ namespace ClientCloud
                 }
 
                 catch (SocketException ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                catch(Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }

@@ -27,6 +27,7 @@ namespace ClientCloud
         private Window window;
         private ClientWork client;
         private string fileForUpload;
+        private bool needToRefresh;
         public MainPage(Window window, ClientWork client)
         {
             InitializeComponent();
