@@ -27,14 +27,13 @@ namespace ClientCloud
         private Window window;
         private ClientWork client;
         private string fileForUpload;
-        private bool needToRefresh;
         public MainPage(Window window, ClientWork client)
         {
             InitializeComponent();
             this.window = window;
             this.client = client;
             welcome.Text += client.Name + "!";
-            doButtons(true);
+            doButtonsActive(true);
             Refreshing();
         }
 
@@ -86,10 +85,10 @@ namespace ClientCloud
                 while (client.downloadSuccess == null)
                 {
                     client.isWorking = true;
-                    Dispatcher.Invoke(() => doButtons(false));
+                    Dispatcher.Invoke(() => doButtonsActive(false));
                 }
                 Dispatcher.Invoke(() => loading.IsBusy=false);
-                Dispatcher.Invoke(() => doButtons(true));
+                Dispatcher.Invoke(() => doButtonsActive(true));
                 client.isWorking = false;
                 Dispatcher.Run();
             }));
@@ -108,11 +107,11 @@ namespace ClientCloud
                 Dispatcher.Invoke(() => loading.IsBusy = true);
                 while (client.refreshSuccess == null)
                 {
-                    Dispatcher.Invoke(() => doButtons(false));
+                    Dispatcher.Invoke(() => doButtonsActive(false));
                     client.isWorking = true;
                 }
                 Dispatcher.Invoke(() => loading.IsBusy = false);
-                Dispatcher.Invoke(() => doButtons(true));
+                Dispatcher.Invoke(() => doButtonsActive(true));
                 client.isWorking = false;
                 Dispatcher.Invoke(() => Refreshing());
 
@@ -183,13 +182,14 @@ namespace ClientCloud
             }
         }
 
-        public void doButtons(bool value)
+        public void doButtonsActive(bool value)
         {
             downloadButton.IsEnabled = value;
             uploadButton.IsEnabled = value;
             refreshButton.IsEnabled = value;
             deleteButton.IsEnabled = value;
             createFolderButton.IsEnabled = value;
+            logButton.IsEnabled = value;
         }
 
         private void listFilesMouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -257,6 +257,48 @@ namespace ClientCloud
                 }
             }
 
+        }
+
+        private void ShowLogClick(object sender, RoutedEventArgs e)
+        {
+            if (!client.isLogWindowOpen)
+            {
+                Task task = client.SendMessage("GetLog", "");
+                task.Wait();
+                GettingLog();
+            }
+            else
+            {
+                MessageBox.Show("Окно лога уже окрыто");
+            }
+        }
+
+        private void GettingLog()
+        {
+            Thread newWindowThread = new Thread(new ThreadStart(() =>
+            {
+                Dispatcher.Invoke(() => loading.IsBusy = true);
+                while (client.downloadSuccess == null)
+                {
+                    Dispatcher.Invoke(() => doButtonsActive(false));
+                    client.isWorking = true;
+                }
+                Dispatcher.Invoke(() => loading.IsBusy = false);
+                Dispatcher.Invoke(() => doButtonsActive(true));
+                client.isWorking = false;
+                if (client.isLogWindowOpen)
+                {
+                    Dispatcher.Invoke(() => window.Content=new LogPage(window,client));
+                }
+
+                Dispatcher.Run();
+            }));
+
+            newWindowThread.SetApartmentState(ApartmentState.STA);
+
+            newWindowThread.IsBackground = true;
+
+            newWindowThread.Start();
         }
     }
 }

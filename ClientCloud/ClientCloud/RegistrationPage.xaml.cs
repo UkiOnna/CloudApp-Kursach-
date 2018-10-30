@@ -69,6 +69,7 @@ namespace ClientCloud
                 {
                     client.isWorking = true;
                     Dispatcher.Invoke(() => registrationButton.IsEnabled = false);
+                    Dispatcher.Invoke(() => backButton.IsEnabled = false);
                 }
                 Dispatcher.Invoke(() => loading.IsBusy = false);
                 if (client.IsKey == true)
@@ -79,6 +80,7 @@ namespace ClientCloud
                 {
                     client.isWorking = false;
                     Dispatcher.Invoke(() => registrationButton.IsEnabled = true);
+                    Dispatcher.Invoke(() => backButton.IsEnabled = true);
                 }
                 Dispatcher.Run();
             }));
@@ -106,6 +108,7 @@ namespace ClientCloud
                 {
                     client.isWorking = true;
                     Dispatcher.Invoke(() => registrationButton.IsEnabled = false);
+                    Dispatcher.Invoke(() => backButton.IsEnabled = false);
                 }
                 Dispatcher.Invoke(() => loading.IsBusy = false);
                 if (client.IsRegistration == true)
@@ -117,6 +120,7 @@ namespace ClientCloud
                 {
                     client.isWorking = false;
                     Dispatcher.Invoke(() => registrationButton.IsEnabled = true);
+                    Dispatcher.Invoke(() => backButton.IsEnabled = true);
                 }
                 Dispatcher.Run();
             }));
@@ -128,5 +132,9 @@ namespace ClientCloud
             newWindowThread.Start();
         }
 
+        private void backButtonClick(object sender, RoutedEventArgs e)
+        {
+            window.Content = new LoginPage(window, client);
+        }
     }
 }

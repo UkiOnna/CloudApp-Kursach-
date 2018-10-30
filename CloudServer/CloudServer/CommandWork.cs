@@ -23,8 +23,10 @@ namespace CloudServer
         private const string CREATE_FOLDER = "CreateFolder";
         private const string REGISTRATION = "Registration";
         private const string LOGIN = "Login";
+        private const string GET_LOG = "GetLog";
         private string key;
         private Dictionary<string, string> fileWays;
+        private Dictionary<string, long> fileSizes;
         private string toFileSave;
         private string fromFileDownload;
         private string itemNeedToDelete;
@@ -33,11 +35,17 @@ namespace CloudServer
         public Message NewCommand { get; set; }
         public Socket MySocket { get; set; }
         private List<string> answer;
+        public bool IsIndexChange;
 
         public CommandWork()
         {
+            IsIndexChange = false;
             fileWays = new Dictionary<string, string>();
             answer = new List<string>();
+            using(var context = new DropBoxContext())
+            {
+                context.Users.ToList();
+            }
         }
 
         public void Start()
@@ -65,7 +73,6 @@ namespace CloudServer
         public void Exit()
         {
             MySocket.Shutdown(SocketShutdown.Both);
-            //sockets.RemoveAt(sokIndx);
         }
 
         public void GetKey()
@@ -98,12 +105,13 @@ namespace CloudServer
         {
             DropBoxFacade facade = new DropBoxFacade(key);
 
+            fileWays.Clear();
             fileWays.Add("fileList", "");
             var task = facade.LoadAll();
             task.Wait();
             DisplayAll(facade.Folders.First(), 0);
             MySocket.Send(ConvertList.FileWaysToByteArray(fileWays));
-            fileWays.Clear();
+            
         }
 
         public void DownloadFile()
@@ -141,6 +149,20 @@ namespace CloudServer
                 task.Wait();
                 answer.Add(UPLOAD_FILE);
                 answer.Add("Файл успешно загружен");
+                using (var context = new DropBoxContext())
+                {
+                    FileInfo info = new FileInfo();
+                    info.UserId = context.Users.ToList().Find(item => item.Key == key).Id;
+                    info.FileWay = toFileSave;
+                    string[] words = toFileSave.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                    info.FileName = words.Last();
+                    info.IsDeleted = false;
+                    info.CreationDate = DateTime.Now;
+                    info.DeletedDate = null;
+                    context.FilesInfo.Add(info);
+                    context.SaveChanges();
+                }
+
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
             }
@@ -148,6 +170,7 @@ namespace CloudServer
             {
                 Console.WriteLine("Ошибка при загрузке,возможно вы выбрали не папку а файл для загрузки файла");
                 NewCommand.Key = "false";
+                answer.Clear();
                 answer.Add(UPLOAD_FILE);
                 answer.Add("Ошибка при загрузке,возможно вы выбрали не паку для загрузки файла");
                 MySocket.Send(ConvertList.ListToByteArray(answer));
@@ -164,6 +187,26 @@ namespace CloudServer
                 task.Wait();
                 answer.Add(DELETE_ITEM);
                 answer.Add("Файл удален");
+                using (var context = new DropBoxContext())
+                {
+                    if (context.FilesInfo.ToList().Count != 0)
+                    {
+                        int userId = context.Users.ToList().Find(item => item.Key == key).Id;
+                        FileInfo info = context.FilesInfo.ToList().Find(item => item.UserId == userId && item.IsDeleted == false && item.FileWay==itemNeedToDelete);
+                        if (info != null)
+                        {
+                            info.IsDeleted = true;
+                            info.DeletedDate = DateTime.Now;
+                            FileInfo oldInfo = context.FilesInfo.ToList().Find(item => item.UserId == userId && item.IsDeleted == false && item.FileWay== itemNeedToDelete);
+
+                            int index = context.FilesInfo.ToList().IndexOf(oldInfo);
+                            if (index != -1)
+                                context.FilesInfo.ToList()[index] = info;
+
+                            context.SaveChanges();
+                        }
+                    }
+                }
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
 
@@ -267,6 +310,18 @@ namespace CloudServer
                 answer.Add("Вы ввели нправильный логин или пароль");
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
+            }
+        }
+
+        public void GetLog()
+        {
+            try
+            {
+                bool isLogSuccess = false;
+            }
+            catch (Exception)
+            {
+
             }
         }
 

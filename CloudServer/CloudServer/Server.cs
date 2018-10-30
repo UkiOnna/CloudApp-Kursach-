@@ -25,22 +25,19 @@ namespace CloudServer
         private const string CREATE_FOLDER = "CreateFolder";
         private const string REGISTRATION = "Registration";
         private const string LOGIN = "Login";
-        private string key;
-        private List<Socket> sockets = new List<Socket>();
-        private string name;
-        private Dictionary<string, string> fileWays;
-        private string toFileSave;
-        private string fromFileDownload;
-        private string itemNeedToDelete;
-        private string folderName;
-        private List<string> answer;
-        private object locker = new object();
-        private List<CommandWork> users;
+        private const string GET_LOG = "GetLog";
+        Dictionary<long, CommandWork> users;
+        private long counter;
+        
+
         public Server()
         {
-            fileWays = new Dictionary<string, string>();
-            answer = new List<string>();
-            users = new List<CommandWork>();
+            users = new Dictionary<long, CommandWork>();
+            counter = 0;
+            //using (var context = new DropBoxContext())
+            //{
+            //    context.Users.ToList();
+            //}
         }
 
         public void BeginToDo(Socket sok)
@@ -54,10 +51,9 @@ namespace CloudServer
                 {
                     CommandWork user = new CommandWork();
                     user.MySocket = sok.Accept();
-                    users.Add(user);
-                    int socketIndex = users.Count - 1;
-
-                    ClientJoin(socketIndex);
+                    users.Add(counter, user);
+                    ClientJoin(counter);
+                    counter++;
                 }
             }
             catch (SocketException ex)
@@ -68,14 +64,14 @@ namespace CloudServer
             {
                 Console.WriteLine("Poka");
                 sok.Close();
-                for (int i = 0; i < sockets.Count; i++)
+                for(int i = 0; i < users.Count; i++)
                 {
-                    sockets[i].Shutdown(SocketShutdown.Both);
+                    users[i].Exit();
                 }
             }
         }
 
-        public Task ClientJoin(int sokIndx)
+        public Task ClientJoin(long sokIndx)
         {
             return Task.Run(() =>
             {
@@ -86,79 +82,84 @@ namespace CloudServer
 
                         if (users.Count > 0)
                         {
-                            users[sokIndx].GetCommand();
+                            if (users.ContainsKey(sokIndx))
+                            {
+                                users[sokIndx].GetCommand();
 
-                            if (users[sokIndx].NewCommand.Command == START)
-                            {
-                                users[sokIndx].Start();
-                                users[sokIndx].NewCommand = null;
-                            }
-                            else if (users[sokIndx].NewCommand.Command == "4")
-                            {
-                                lock (locker)
+                                if (users[sokIndx].NewCommand.Command == START)
+                                {
+                                    users[sokIndx].Start();
+                                    users[sokIndx].NewCommand = null;
+                                }
+                                else if (users[sokIndx].NewCommand.Command == "4")
                                 {
                                     users[sokIndx].Exit();
-                                    users.RemoveAt(sokIndx);
+                                    users.Remove(sokIndx);
                                     Console.WriteLine("Пока");
+
                                 }
-                            }
 
 
 
 
-                            else if (users[sokIndx].NewCommand.Command == GET_KEY)
-                            {
-                                users[sokIndx].GetKey();
-                                users[sokIndx].NewCommand = null;
+                                else if (users[sokIndx].NewCommand.Command == GET_KEY)
+                                {
+                                    users[sokIndx].GetKey();
+                                    users[sokIndx].NewCommand = null;
 
-                            }
+                                }
 
-                            else if (users[sokIndx].NewCommand.Command == GET_FILES)
-                            {
-                                users[sokIndx].GetFiles();
-                                users[sokIndx].NewCommand = null;
-                            }
+                                else if (users[sokIndx].NewCommand.Command == GET_FILES)
+                                {
+                                    users[sokIndx].GetFiles();
+                                    users[sokIndx].NewCommand = null;
+                                }
 
-                            else if (users[sokIndx].NewCommand.Command == DOWNLOAD_FILE)
-                            {
-                                users[sokIndx].DownloadFile();
-                                users[sokIndx].NewCommand = null;
-                            }
+                                else if (users[sokIndx].NewCommand.Command == DOWNLOAD_FILE)
+                                {
+                                    users[sokIndx].DownloadFile();
+                                    users[sokIndx].NewCommand = null;
+                                }
 
-                            else if (users[sokIndx].NewCommand.Command == UPLOAD_FILE)
-                            {
-                                users[sokIndx].UploadFile();
-                                users[sokIndx].NewCommand = null;
-                            }
+                                else if (users[sokIndx].NewCommand.Command == UPLOAD_FILE)
+                                {
+                                    users[sokIndx].UploadFile();
+                                    users[sokIndx].NewCommand = null;
+                                }
 
-                            else if (users[sokIndx].NewCommand.Command == DELETE_ITEM)
-                            {
-                                users[sokIndx].DeleteFile();
-                                users[sokIndx].NewCommand = null;
-                            }
+                                else if (users[sokIndx].NewCommand.Command == DELETE_ITEM)
+                                {
+                                    users[sokIndx].DeleteFile();
+                                    users[sokIndx].NewCommand = null;
+                                }
 
-                            else if (users[sokIndx].NewCommand.Command == CREATE_FOLDER)
-                            {
-                                users[sokIndx].CreateFolder();
-                                users[sokIndx].NewCommand = null;
-                            }
+                                else if (users[sokIndx].NewCommand.Command == CREATE_FOLDER)
+                                {
+                                    users[sokIndx].CreateFolder();
+                                    users[sokIndx].NewCommand = null;
+                                }
 
-                            else if (users[sokIndx].NewCommand.Command == REGISTRATION)
-                            {
-                                users[sokIndx].Registration();
-                                users[sokIndx].NewCommand = null;
-                            }
+                                else if (users[sokIndx].NewCommand.Command == REGISTRATION)
+                                {
+                                    users[sokIndx].Registration();
+                                    users[sokIndx].NewCommand = null;
+                                }
 
-                            else if (users[sokIndx].NewCommand.Command == LOGIN)
-                            {
-                                users[sokIndx].Login();
-                                users[sokIndx].NewCommand = null;
-                            }
+                                else if (users[sokIndx].NewCommand.Command == LOGIN)
+                                {
+                                    users[sokIndx].Login();
+                                    users[sokIndx].NewCommand = null;
+                                }
+                                else if (users[sokIndx].NewCommand.Command == GET_LOG)
+                                {
+
+                                }
 
 
 
-                            else
-                            {
+                                else
+                                {
+                                }
                             }
                         }
 

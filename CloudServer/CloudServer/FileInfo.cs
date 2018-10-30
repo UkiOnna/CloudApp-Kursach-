@@ -16,12 +16,9 @@ namespace CloudServer
         public int UserId { get; set; }
         public User User { get; set; }
         public string FileName { get; set; }
-        public string FileSize { get; set; }
+        public string FileWay { get; set; }
+        public bool IsDeleted { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime? DeletedDate { get; set; }
     }
 }
-
-//[ForeignKey("Group")]
-//public int GroupId { get; set; }
-//public Group Group { get; set; }

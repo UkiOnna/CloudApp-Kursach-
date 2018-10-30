@@ -22,10 +22,12 @@ namespace ClientCloud
         public bool? IsRegistration { get; set; }
         public bool? IsLogin { get; set; }
         public Dictionary<string, string> fileList { get; set; }
+        public List<string> LogList { get; set; }
         private bool isStrings;
         public string downloadSuccess { get; set; }
         public string refreshSuccess { get; set; }
         public bool isWorking { get; set; }
+        public bool isLogWindowOpen { get; set; }
 
         public ClientWork()
         {
@@ -38,6 +40,7 @@ namespace ClientCloud
             isStrings = true;
             downloadSuccess = null;
             refreshSuccess = null;
+            isLogWindowOpen = false;
             try
             {
                 chatSocket.Connect(endPoint);
@@ -162,6 +165,19 @@ namespace ClientCloud
                             MessageBox.Show(answer[1]);
                         }
                         else if (answer.First() == "CreateFolder")
+                        {
+                            downloadSuccess = answer[1];
+                            MessageBox.Show(answer[1]);
+                        }
+
+                        else if (answer.First() == "GetLog true")
+                        {
+                            downloadSuccess = answer[1];
+                            isLogWindowOpen = true;
+                            LogList = answer;
+                        }
+
+                        else if (answer.First() == "GetLog false")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);

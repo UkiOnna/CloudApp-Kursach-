@@ -17,6 +17,7 @@
         <Button Name="registrationButton" Content="Регистрация" HorizontalAlignment="Left" Margin="341,296,0,0" VerticalAlignment="Top" Width="120" Click="Registration"/>
         <TextBlock HorizontalAlignment="Left" Margin="386,232,0,0" TextWrapping="Wrap" Text="Ключ" VerticalAlignment="Top" FontSize="14"/>
         <TextBox Name="keyText" HorizontalAlignment="Left" Height="23" Margin="160,255,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="505"/>
+        <Button Name="backButton" Content="Назад" HorizontalAlignment="Left" Margin="512,296,0,0" VerticalAlignment="Top" Width="120" Click="backButtonClick"/>
         <xctk:BusyIndicator Name="loading" IsBusy="False" BusyContent="Идет проверка.."/>
     </Grid>
 </Page>

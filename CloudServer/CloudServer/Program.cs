@@ -16,7 +16,6 @@ namespace CloudServer
 
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3535);
             serverSocket.Bind(endPoint);
-
             Server server = new Server();
             server.BeginToDo(serverSocket);
         }
