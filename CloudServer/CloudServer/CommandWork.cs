@@ -171,7 +171,7 @@ namespace CloudServer
                 Console.WriteLine("Ошибка при загрузке,возможно вы выбрали не папку а файл для загрузки файла");
                 NewCommand.Key = "false";
                 answer.Clear();
-                answer.Add(UPLOAD_FILE);
+                answer.Add(UPLOAD_FILE+" false");
                 answer.Add("Ошибка при загрузке,возможно вы выбрали не паку для загрузки файла");
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
@@ -214,7 +214,7 @@ namespace CloudServer
             catch (AggregateException)
             {
                 NewCommand.Key = "false";
-                answer.Add(DELETE_ITEM);
+                answer.Add(DELETE_ITEM+" false");
                 answer.Add("Ошибка при удалении");
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
@@ -237,7 +237,7 @@ namespace CloudServer
             catch (AggregateException)
             {
                 NewCommand.Key = "false";
-                answer.Add(CREATE_FOLDER);
+                answer.Add(CREATE_FOLDER+" false");
                 answer.Add("Ошибка при создании");
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();

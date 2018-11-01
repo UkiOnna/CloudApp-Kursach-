@@ -28,12 +28,14 @@ namespace ClientCloud
         public string refreshSuccess { get; set; }
         public bool isWorking { get; set; }
         public bool isLogWindowOpen { get; set; }
+        public bool isOperationDone { get; set; }
+        private string operationMessage;
 
         public ClientWork()
         {
             isWorking = false;
             chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3535);
+            endPoint = new IPEndPoint(IPAddress.Parse("10.2.3.78"), 3535);
             IsKey = null;
             IsRegistration = null;
             IsLogin = null;
@@ -41,6 +43,7 @@ namespace ClientCloud
             downloadSuccess = null;
             refreshSuccess = null;
             isLogWindowOpen = false;
+            isOperationDone = false;
             try
             {
                 chatSocket.Connect(endPoint);
@@ -79,6 +82,7 @@ namespace ClientCloud
             IsKey = null;
             IsRegistration = null;
             IsLogin = null;
+            isOperationDone = false;
             return Task.Run(async () =>
             {
                 await ThrowLetter(messg, key, file);
@@ -155,16 +159,37 @@ namespace ClientCloud
                         else if (answer.First() == "UploadFile")
                         {
                             downloadSuccess = answer[1];
-                            MessageBox.Show(answer[1]);
+                            isOperationDone = true;
+                            operationMessage = answer[1];
+                        }
 
+                        else if(answer.First()=="UploadFile false")
+                        {
+                            downloadSuccess = answer[1];
+                            MessageBox.Show(answer[1]);
                         }
 
                         else if (answer.First() == "DeleteItem")
                         {
                             downloadSuccess = answer[1];
+                            isOperationDone = true;
+                            operationMessage = answer[1];
+                        }
+
+                        else if(answer.First()=="DeleteItem false")
+                        {
+                            downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
                         }
+
                         else if (answer.First() == "CreateFolder")
+                        {
+                            downloadSuccess = answer[1];
+                            isOperationDone = true;
+                            operationMessage = answer[1];
+                        }
+
+                        else if(answer.First()=="CreateFolder false")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
@@ -214,6 +239,10 @@ namespace ClientCloud
                             refreshSuccess = "ha";
                             IsLogin = true;
                             fileList = fileWays;
+                            if (isOperationDone)
+                            {
+                                MessageBox.Show(operationMessage);
+                            }
                         }
 
                     }

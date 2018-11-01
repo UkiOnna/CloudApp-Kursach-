@@ -27,8 +27,10 @@ namespace ClientCloud
         private Window window;
         private ClientWork client;
         private string fileForUpload;
+        private bool isDownload;
         public MainPage(Window window, ClientWork client)
         {
+            isDownload = false;
             InitializeComponent();
             this.window = window;
             this.client = client;
@@ -63,6 +65,7 @@ namespace ClientCloud
                     fileNameForDownload = fileNameForDownload.Remove(0, 6);
                     Task task = client.SendMessage("DownloadFile", fileForUpload + fileNameForDownload, fileElement.Value);
                     task.Wait();
+                    isDownload = true;
                     Downloading();
                 }
                 else
@@ -87,9 +90,22 @@ namespace ClientCloud
                     client.isWorking = true;
                     Dispatcher.Invoke(() => doButtonsActive(false));
                 }
-                Dispatcher.Invoke(() => loading.IsBusy=false);
-                Dispatcher.Invoke(() => doButtonsActive(true));
-                client.isWorking = false;
+                if (isDownload == true || client.isOperationDone==false)
+                {
+                    isDownload = false;
+                    Dispatcher.Invoke(() => loading.IsBusy = false);
+                    Dispatcher.Invoke(() => doButtonsActive(true));
+                    client.isWorking = false;
+
+                }
+                else
+                {
+                    Task task = client.SendMessage("GetFiles", "");
+                    task.Wait();
+                    Dispatcher.Invoke(() => RefreshingThread());
+                    Dispatcher.Invoke(() => listFiles.Items.Clear());
+                }
+                
                 Dispatcher.Run();
             }));
 
