@@ -9,8 +9,16 @@
       Title="LogPage">
 
     <Grid>
-        <ListBox Name="logList" HorizontalAlignment="Left" Height="358" Margin="10,10,0,0" VerticalAlignment="Top" Width="780"/>
-        <Button Content="Назад" HorizontalAlignment="Left" Margin="10,388,0,0" VerticalAlignment="Top" Width="75" Click="BackClick"/>
+        <Button Content="Назад" HorizontalAlignment="Left" Margin="10,369,0,0" VerticalAlignment="Top" Width="75" Click="BackClick"/>
+        <ListView Name="logList" HorizontalAlignment="Left" Height="343" Margin="10,10,0,0" VerticalAlignment="Top" Width="780">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="300" DisplayMemberBinding="{Binding Path=Name}">Имя</GridViewColumn>
+                    <GridViewColumn Width="300" DisplayMemberBinding="{Binding Path=CreationDate}">Создан</GridViewColumn>
+                    <GridViewColumn Width="300" DisplayMemberBinding="{Binding Path=DeletedDate}">Удален</GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
 
     </Grid>
 </Page>

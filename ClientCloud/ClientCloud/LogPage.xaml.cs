@@ -32,13 +32,19 @@ namespace ClientCloud
             {
                 for (int i = 1; i < client.LogList.Count; i++)
                 {
-                    logList.Items.Add(client.LogList[i]);
+                    var items = client.LogList[i].Split('-');
+                    LogElement element = new LogElement();
+                    element.Name = items[0];
+                    element.CreationDate = items[1];
+                    element.DeletedDate = items[2];
+                    logList.Items.Add(element);
                 }
             }
         }
 
         private void BackClick(object sender, RoutedEventArgs e)
         {
+            client.isLogWindowOpen = false;
             window.Content = new MainPage(window, client);
         }
     }

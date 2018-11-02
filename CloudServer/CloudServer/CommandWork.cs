@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CloudServer
 {
-    
+
     public class CommandWork
     {
         private const string START = "start";
@@ -26,7 +26,6 @@ namespace CloudServer
         private const string GET_LOG = "GetLog";
         private string key;
         private Dictionary<string, string> fileWays;
-        private Dictionary<string, long> fileSizes;
         private string toFileSave;
         private string fromFileDownload;
         private string itemNeedToDelete;
@@ -42,7 +41,7 @@ namespace CloudServer
             IsIndexChange = false;
             fileWays = new Dictionary<string, string>();
             answer = new List<string>();
-            using(var context = new DropBoxContext())
+            using (var context = new DropBoxContext())
             {
                 context.Users.ToList();
             }
@@ -111,14 +110,14 @@ namespace CloudServer
             task.Wait();
             DisplayAll(facade.Folders.First(), 0);
             MySocket.Send(ConvertList.FileWaysToByteArray(fileWays));
-            
+
         }
 
         public void DownloadFile()
         {
             try
             {
-                
+
                 fromFileDownload = NewCommand.FileWay;
                 toFileSave = NewCommand.Key;
                 var task = Task.Run(DropBoxDownloadFile);
@@ -171,7 +170,7 @@ namespace CloudServer
                 Console.WriteLine("Ошибка при загрузке,возможно вы выбрали не папку а файл для загрузки файла");
                 NewCommand.Key = "false";
                 answer.Clear();
-                answer.Add(UPLOAD_FILE+" false");
+                answer.Add(UPLOAD_FILE + " false");
                 answer.Add("Ошибка при загрузке,возможно вы выбрали не паку для загрузки файла");
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
@@ -192,12 +191,12 @@ namespace CloudServer
                     if (context.FilesInfo.ToList().Count != 0)
                     {
                         int userId = context.Users.ToList().Find(item => item.Key == key).Id;
-                        FileInfo info = context.FilesInfo.ToList().Find(item => item.UserId == userId && item.IsDeleted == false && item.FileWay==itemNeedToDelete);
+                        FileInfo info = context.FilesInfo.ToList().Find(item => item.UserId == userId && item.IsDeleted == false && item.FileWay == itemNeedToDelete);
                         if (info != null)
                         {
                             info.IsDeleted = true;
                             info.DeletedDate = DateTime.Now;
-                            FileInfo oldInfo = context.FilesInfo.ToList().Find(item => item.UserId == userId && item.IsDeleted == false && item.FileWay== itemNeedToDelete);
+                            FileInfo oldInfo = context.FilesInfo.ToList().Find(item => item.UserId == userId && item.IsDeleted == false && item.FileWay == itemNeedToDelete);
 
                             int index = context.FilesInfo.ToList().IndexOf(oldInfo);
                             if (index != -1)
@@ -214,7 +213,7 @@ namespace CloudServer
             catch (AggregateException)
             {
                 NewCommand.Key = "false";
-                answer.Add(DELETE_ITEM+" false");
+                answer.Add(DELETE_ITEM + " false");
                 answer.Add("Ошибка при удалении");
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
@@ -237,7 +236,7 @@ namespace CloudServer
             catch (AggregateException)
             {
                 NewCommand.Key = "false";
-                answer.Add(CREATE_FOLDER+" false");
+                answer.Add(CREATE_FOLDER + " false");
                 answer.Add("Ошибка при создании");
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
@@ -317,11 +316,39 @@ namespace CloudServer
         {
             try
             {
-                bool isLogSuccess = false;
+                using (var context = new DropBoxContext())
+                {
+                    if (context.FilesInfo.ToList().Count != 0)
+                    {
+                        answer.Add(GET_LOG + " true");
+                        foreach (var a in context.FilesInfo.ToList())
+                        {
+                            if (a.IsDeleted)
+                            {
+                                answer.Add(a.FileName + '-' + a.CreationDate.ToShortDateString() + " " + a.CreationDate.ToShortTimeString() + '-'
+                                     + a.CreationDate.ToShortDateString() + " " + a.DeletedDate.Value.ToShortTimeString());
+                            }
+
+                            else
+                            {
+                                answer.Add(a.FileName + '-' + a.CreationDate.ToShortDateString() + " " + a.CreationDate.ToShortTimeString() + '-' + " ");
+                            }
+                        }
+                        MySocket.Send(ConvertList.ListToByteArray(answer));
+                        answer.Clear();
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+                }
             }
             catch (Exception)
             {
-
+                answer.Add(GET_LOG + " " + "false");
+                answer.Add(" " + "-" + " " + "-" + " ");
+                MySocket.Send(ConvertList.ListToByteArray(answer));
+                answer.Clear();
             }
         }
 

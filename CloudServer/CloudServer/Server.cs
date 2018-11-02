@@ -34,10 +34,10 @@ namespace CloudServer
         {
             users = new Dictionary<long, CommandWork>();
             counter = 0;
-            //using (var context = new DropBoxContext())
-            //{
-            //    context.Users.ToList();
-            //}
+            using (var context = new DropBoxContext())
+            {
+                context.Users.ToList();
+            }
         }
 
         public void BeginToDo(Socket sok)
@@ -152,7 +152,8 @@ namespace CloudServer
                                 }
                                 else if (users[sokIndx].NewCommand.Command == GET_LOG)
                                 {
-
+                                    users[sokIndx].GetLog();
+                                    users[sokIndx].NewCommand = null;
                                 }
 
 

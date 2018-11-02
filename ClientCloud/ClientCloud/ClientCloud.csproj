@@ -90,6 +90,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="LogElement.cs" />
     <Compile Include="LogPage.xaml.cs">
       <DependentUpon>LogPage.xaml</DependentUpon>
     </Compile>

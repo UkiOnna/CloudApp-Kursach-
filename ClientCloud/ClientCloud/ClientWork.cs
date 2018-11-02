@@ -35,7 +35,7 @@ namespace ClientCloud
         {
             isWorking = false;
             chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            endPoint = new IPEndPoint(IPAddress.Parse("10.2.3.78"), 3535);
+            endPoint = new IPEndPoint(IPAddress.Parse("10.2.3.90"), 3535);
             IsKey = null;
             IsRegistration = null;
             IsLogin = null;
@@ -205,7 +205,8 @@ namespace ClientCloud
                         else if (answer.First() == "GetLog false")
                         {
                             downloadSuccess = answer[1];
-                            MessageBox.Show(answer[1]);
+                            isLogWindowOpen = true;
+                            LogList = answer;
                         }
 
                         else if (answer.First() == "Registration true")
