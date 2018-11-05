@@ -35,7 +35,7 @@ namespace ClientCloud
         {
             isWorking = false;
             chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            endPoint = new IPEndPoint(IPAddress.Parse("10.2.3.90"), 3535);
+            endPoint = new IPEndPoint(IPAddress.Parse("10.2.3.78"), 3535);
             IsKey = null;
             IsRegistration = null;
             IsLogin = null;
@@ -149,11 +149,10 @@ namespace ClientCloud
 
                         }
 
-                        else if (answer.First() == "DownloadFile")
+                        else if (answer.First() == "DownloadFile" || answer.First() == "DownloadFolder")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
-
                         }
 
                         else if (answer.First() == "UploadFile")
@@ -163,7 +162,7 @@ namespace ClientCloud
                             operationMessage = answer[1];
                         }
 
-                        else if(answer.First()=="UploadFile false")
+                        else if (answer.First() == "UploadFile false")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
@@ -176,7 +175,7 @@ namespace ClientCloud
                             operationMessage = answer[1];
                         }
 
-                        else if(answer.First()=="DeleteItem false")
+                        else if (answer.First() == "DeleteItem false")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
@@ -189,7 +188,7 @@ namespace ClientCloud
                             operationMessage = answer[1];
                         }
 
-                        else if(answer.First()=="CreateFolder false")
+                        else if (answer.First() == "CreateFolder false")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);

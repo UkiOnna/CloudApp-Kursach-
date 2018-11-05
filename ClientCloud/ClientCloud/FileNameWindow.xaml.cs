@@ -14,9 +14,6 @@ using System.Windows.Shapes;
 
 namespace ClientCloud
 {
-    /// <summary>
-    /// Логика взаимодействия для FileNameWindow.xaml
-    /// </summary>
     public partial class FileNameWindow : Window
     {
         public FileNameWindow()

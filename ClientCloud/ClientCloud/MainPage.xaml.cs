@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,27 +6,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace ClientCloud
 {
-    /// <summary>
-    /// Логика взаимодействия для MainPage.xaml
-    /// </summary>
-    /// 
     public partial class MainPage : Page
     {
         private Window window;
         private ClientWork client;
         private string fileForUpload;
         private bool isDownload;
+        private char[] letters = { '\\', '/', ':', '?', '*', '"', '|' };
+
         public MainPage(Window window, ClientWork client)
         {
             isDownload = false;
@@ -62,11 +53,23 @@ namespace ClientCloud
                         }
                     }
                     string fileNameForDownload = fileElement.Key.Trim();
-                    fileNameForDownload = fileNameForDownload.Remove(0, 6);
-                    Task task = client.SendMessage("DownloadFile", fileForUpload + fileNameForDownload, fileElement.Value);
-                    task.Wait();
-                    isDownload = true;
-                    Downloading();
+                    if (fileNameForDownload[2] == 'i')
+                    {
+                        fileNameForDownload = fileNameForDownload.Remove(0, 6);
+                        Task task = client.SendMessage("DownloadFile", fileForUpload + fileNameForDownload, fileElement.Value);
+                        task.Wait();
+                        isDownload = true;
+                        Downloading();
+                    }
+                    else
+                    {
+                        fileNameForDownload = fileNameForDownload.Remove(0, 8);
+                        Task task = client.SendMessage("DownloadFolder", fileForUpload + fileNameForDownload, fileElement.Value);
+                        task.Wait();
+                        isDownload = true;
+                        Downloading();
+                    }
+                    
                 }
                 else
                 {
@@ -78,6 +81,125 @@ namespace ClientCloud
             {
                 MessageBox.Show("Выберите файл который хотите скачать");
             }
+        }
+
+        private void ShowLogClick(object sender, RoutedEventArgs e)
+        {
+            if (!client.isLogWindowOpen)
+            {
+                Task task = client.SendMessage("GetLog", "");
+                task.Wait();
+                GettingLog();
+            }
+            else
+            {
+                MessageBox.Show("Окно лога уже окрыто");
+            }
+        }
+
+        private void UploadClick(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                fileForUpload = openFileDialog.FileName;
+
+
+                string folderForUload;
+                if (listFiles.SelectedItem != null)
+                {
+                    string fileName = (string)listFiles.SelectedItem;
+                    KeyValuePair<string, string> fileElement = new KeyValuePair<string, string>();
+                    foreach (KeyValuePair<string, string> keyValue in client.fileList)
+                    {
+                        if (fileName == keyValue.Key)
+                        {
+                            fileElement = keyValue;
+                        }
+                    }
+                    folderForUload = fileElement.Value;
+                }
+                else
+                {
+                    folderForUload = "";
+                }
+
+                Task task = client.SendMessage("UploadFile", fileForUpload, folderForUload + "/" + openFileDialog.SafeFileName);
+                task.Wait();
+                Downloading();
+            }
+            else
+            {
+                fileForUpload = "/";
+            }
+        }
+
+        private void DeleteFileClick(object sender, RoutedEventArgs e)
+        {
+            if (listFiles.SelectedItem != null)
+            {
+                var dialogResult = MessageBox.Show("Вы уверены что хотите удалить это?", "Удаление", MessageBoxButton.YesNo);
+                if (dialogResult == MessageBoxResult.Yes)
+                {
+                    string fileName = (string)listFiles.SelectedItem;
+                    KeyValuePair<string, string> fileElement = new KeyValuePair<string, string>();
+                    foreach (KeyValuePair<string, string> keyValue in client.fileList)
+                    {
+                        if (fileName == keyValue.Key)
+                        {
+                            fileElement = keyValue;
+                        }
+                    }
+                    Task task = client.SendMessage("DeleteItem", fileElement.Value);
+                    task.Wait();
+                    Downloading();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выберите файл который хотите удалить");
+            }
+        }
+
+        private void RefreshClick(object sender, RoutedEventArgs e)
+        {
+            Task task = client.SendMessage("GetFiles", "");
+            task.Wait();
+            RefreshingThread();
+            listFiles.Items.Clear();
+        }
+
+        private void CreateFolderButtonClick(object sender, RoutedEventArgs e)
+        {
+            FileNameWindow fileNameWindow = new FileNameWindow();
+
+            if (fileNameWindow.ShowDialog() == true)
+            {
+                if (fileNameWindow.FileName != string.Empty)
+                {
+                    if (!fileNameWindow.FileName.Any(symbol => letters.Any(sub => sub == symbol)))
+                    {
+                        string fileName = (string)listFiles.SelectedItem;
+                        KeyValuePair<string, string> fileElement = new KeyValuePair<string, string>();
+                        foreach (KeyValuePair<string, string> keyValue in client.fileList)
+                        {
+                            if (fileName == keyValue.Key)
+                            {
+                                fileElement = keyValue;
+                            }
+                        }
+                        Task task = client.SendMessage("CreateFolder", fileElement.Value + "/" + fileNameWindow.FileName);
+                        task.Wait();
+                        Downloading();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Недопустимое имя папки");
+                    }
+
+                }
+            }
+
         }
 
         private void Downloading()
@@ -141,54 +263,6 @@ namespace ClientCloud
             newWindowThread.Start();
         }
 
-        private void UploadClick(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
-            {
-                fileForUpload = openFileDialog.FileName;
-
-
-                string folderForUload;
-                if (listFiles.SelectedItem != null)
-                {
-                    string fileName = (string)listFiles.SelectedItem;
-                    KeyValuePair<string, string> fileElement = new KeyValuePair<string, string>();
-                    foreach (KeyValuePair<string, string> keyValue in client.fileList)
-                    {
-                        if (fileName == keyValue.Key)
-                        {
-                            fileElement = keyValue;
-                        }
-                    }
-                    folderForUload = fileElement.Value;
-                }
-                else
-                {
-                    folderForUload = "";
-                }
-
-                Task task = client.SendMessage("UploadFile", fileForUpload, folderForUload + "/" + openFileDialog.SafeFileName);
-                task.Wait();
-                Downloading();
-            }
-            else
-            {
-                fileForUpload = "/";
-            }
-
-
-
-        }
-
-        private void RefreshClick(object sender, RoutedEventArgs e)
-        {
-            Task task = client.SendMessage("GetFiles", "");
-            task.Wait();
-            RefreshingThread();
-            listFiles.Items.Clear();
-        }
-
         public void Refreshing()
         {
             foreach (KeyValuePair<string, string> keyValue in client.fileList)
@@ -208,85 +282,9 @@ namespace ClientCloud
             logButton.IsEnabled = value;
         }
 
-        private void listFilesMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        private void ListFilesMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             listFiles.SelectedIndex = -1;
-        }
-
-        private void DeleteFile(object sender, RoutedEventArgs e)
-        {
-            if (listFiles.SelectedItem != null)
-            {
-                var dialogResult = MessageBox.Show("Вы уверены что хотите удалить это?","Удаление", MessageBoxButton.YesNo);
-                if (dialogResult == MessageBoxResult.Yes)
-                {
-                    string fileName = (string)listFiles.SelectedItem;
-                    KeyValuePair<string, string> fileElement = new KeyValuePair<string, string>();
-                    foreach (KeyValuePair<string, string> keyValue in client.fileList)
-                    {
-                        if (fileName == keyValue.Key)
-                        {
-                            fileElement = keyValue;
-                        }
-                    }
-                    Task task = client.SendMessage("DeleteItem", fileElement.Value);
-                    task.Wait();
-                    Downloading();
-                }
-            }
-            else
-            {
-                MessageBox.Show("Выберите файл который хотите удалить");
-            }
-        }
-
-        private char[] letters = {'\\', '/', ':', '?',  '*',  '"', '|' };
-
-        private void createFolderButtonClick(object sender, RoutedEventArgs e)
-        {
-            FileNameWindow fileNameWindow = new FileNameWindow();
-
-            if (fileNameWindow.ShowDialog() == true)
-            {
-                if (fileNameWindow.FileName != string.Empty)
-                {
-                    if (!fileNameWindow.FileName.Any(symbol => letters.Any(sub => sub == symbol)))
-                    {
-                        string fileName = (string)listFiles.SelectedItem;
-                        KeyValuePair<string, string> fileElement = new KeyValuePair<string, string>();
-                        foreach (KeyValuePair<string, string> keyValue in client.fileList)
-                        {
-                            if (fileName == keyValue.Key)
-                            {
-                                fileElement = keyValue;
-                            }
-                        }
-                        Task task = client.SendMessage("CreateFolder", fileElement.Value + "/" + fileNameWindow.FileName);
-                        task.Wait();
-                        Downloading();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Недопустимое имя папки");
-                    }
-                    
-                }
-            }
-
-        }
-
-        private void ShowLogClick(object sender, RoutedEventArgs e)
-        {
-            if (!client.isLogWindowOpen)
-            {
-                Task task = client.SendMessage("GetLog", "");
-                task.Wait();
-                GettingLog();
-            }
-            else
-            {
-                MessageBox.Show("Окно лога уже окрыто");
-            }
         }
 
         private void GettingLog()

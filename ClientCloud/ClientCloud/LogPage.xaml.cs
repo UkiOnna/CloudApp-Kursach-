@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace ClientCloud
 {
-    /// <summary>
-    /// Логика взаимодействия для LogPage.xaml
-    /// </summary>
     public partial class LogPage : Page
     {
         private Window window;

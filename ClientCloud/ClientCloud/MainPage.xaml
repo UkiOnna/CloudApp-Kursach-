@@ -7,17 +7,16 @@
       xmlns:local="clr-namespace:ClientCloud"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="MainPage" MouseRightButtonDown="listFilesMouseRightButtonDown">
+      Title="MainPage" MouseRightButtonDown="ListFilesMouseRightButtonDown" >
 
     <Grid>
-        
         <TextBlock Name="welcome" HorizontalAlignment="Left" Margin="470,10,0,0" TextWrapping="Wrap" Text="Добро пожаловать " VerticalAlignment="Top" Height="72" Width="320" FontSize="25" TextAlignment="Center"/>
-        <ListBox Name="listFiles" Height="364" Margin="10,10,335,0" VerticalAlignment="Top" MouseRightButtonDown="listFilesMouseRightButtonDown"/>
+        <ListBox Name="listFiles" Height="364" Margin="10,10,335,0" VerticalAlignment="Top" MouseRightButtonDown="ListFilesMouseRightButtonDown"/>
         <Button Name="downloadButton" Content="Скачать" HorizontalAlignment="Left" Margin="470,160,0,0" VerticalAlignment="Top" Width="307" Click="DownloadClick" Height="34" FontSize="20"/>
         <Button Name="uploadButton" Content="Загрузить" HorizontalAlignment="Left" Margin="470,100,0,0" VerticalAlignment="Top" Width="307" Click="UploadClick" Height="34" FontSize="20"/>
         <Button Name="refreshButton" Content="Обновить" HorizontalAlignment="Left" Margin="470,340,0,0" VerticalAlignment="Top" Width="307" Click="RefreshClick" Height="34" FontSize="20"/>
-        <Button Name="deleteButton" Content="Удалить" HorizontalAlignment="Left" Margin="470,220,0,0" VerticalAlignment="Top" Width="307" Click="DeleteFile" Height="34" FontSize="20"/>
-        <Button x:Name="createFolderButton" Content="Создать папку" HorizontalAlignment="Left" Margin="470,280,0,0" VerticalAlignment="Top" Width="307"  Height="34" FontSize="20" Click="createFolderButtonClick"/>
+        <Button Name="deleteButton" Content="Удалить" HorizontalAlignment="Left" Margin="470,220,0,0" VerticalAlignment="Top" Width="307" Click="DeleteFileClick" Height="34" FontSize="20"/>
+        <Button x:Name="createFolderButton" Content="Создать папку" HorizontalAlignment="Left" Margin="470,280,0,0" VerticalAlignment="Top" Width="307"  Height="34" FontSize="20" Click="CreateFolderButtonClick"/>
         <Button Name="logButton" Content="Лог файлов" HorizontalAlignment="Left" Margin="10,374,0,0" VerticalAlignment="Top" Width="136" Click="ShowLogClick"/>
         <xctk:BusyIndicator Name="loading" IsBusy="False" BusyContent="Пожалуйста подождите.."/>
     </Grid>

@@ -20,6 +20,7 @@ namespace CloudServer
         private const string GET_KEY = "GetKey";
         private const string GET_FILES = "GetFiles";
         private const string DOWNLOAD_FILE = "DownloadFile";
+        private const string DOWNLOAD_FOLDER = "DownloadFolder";
         private const string UPLOAD_FILE = "UploadFile";
         private const string DELETE_ITEM = "DeleteItem";
         private const string CREATE_FOLDER = "CreateFolder";
@@ -115,7 +116,7 @@ namespace CloudServer
                                     users[sokIndx].NewCommand = null;
                                 }
 
-                                else if (users[sokIndx].NewCommand.Command == DOWNLOAD_FILE)
+                                else if (users[sokIndx].NewCommand.Command == DOWNLOAD_FILE || users[sokIndx].NewCommand.Command==DOWNLOAD_FOLDER)
                                 {
                                     users[sokIndx].DownloadFile();
                                     users[sokIndx].NewCommand = null;
@@ -176,6 +177,5 @@ namespace CloudServer
                 }
             });
         }
-
     }
 }

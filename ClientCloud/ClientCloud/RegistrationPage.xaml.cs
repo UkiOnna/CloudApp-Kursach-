@@ -17,15 +17,12 @@ using System.Windows.Threading;
 
 namespace ClientCloud
 {
-    /// <summary>
-    /// Логика взаимодействия для RegistrationPage.xaml
-    /// </summary>
     public partial class RegistrationPage : Page
     {
         private Window window;
         private string key;
         private ClientWork client;
-        private char[] letters = { '\\', '/', ':', '?', '*', '"', '|' };
+        private char[] letters = { '\\', '/', ':', '?', '*', '"', '|',' ' };
 
         public RegistrationPage(Window window, ClientWork client)
         {
@@ -40,15 +37,13 @@ namespace ClientCloud
         {
             key = keyText.Text;
             if (key == string.Empty ||loginText.Text==string.Empty||passwordText.Text.Length<4|| loginText.Text.Any(symbol => letters.Any(sub => sub == symbol))==true
-                || passwordText.Text.Any(symbol => letters.Any(sub => sub == symbol)) == true)
+                || passwordText.Text.Any(symbol => letters.Any(sub => sub == symbol)) == true|| loginText.Text.Length<1)
             {
                 Ex();
             }
             
             else
             {
-                loginText.Text.Trim();
-                passwordText.Text.Trim();
                 Task task = client.SendMessage("GetKey", key);
                 task.Wait();
                 CheckingKey();

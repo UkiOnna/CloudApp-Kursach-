@@ -18,6 +18,7 @@ namespace CloudServer
         private const string GET_KEY = "GetKey";
         private const string GET_FILES = "GetFiles";
         private const string DOWNLOAD_FILE = "DownloadFile";
+        private const string DOWNLOAD_FOLDER = "DownloadFolder";
         private const string UPLOAD_FILE = "UploadFile";
         private const string DELETE_ITEM = "DeleteItem";
         private const string CREATE_FOLDER = "CreateFolder";
@@ -394,12 +395,26 @@ namespace CloudServer
             {
 
                 string file = fromFileDownload;
-                using (var response = await dbx.Files.DownloadAsync(file))
+                if (NewCommand.Command == DOWNLOAD_FOLDER)
                 {
-                    var s = response.GetContentAsByteArrayAsync();
-                    s.Wait();
-                    var d = s.Result;
-                    File.WriteAllBytes(toFileSave, d);
+                    using (var response = await dbx.Files.DownloadZipAsync(file))
+                    {
+                        var s = response.GetContentAsByteArrayAsync();
+                        s.Wait();
+                        var d = s.Result;
+                        toFileSave += ".rar";
+                        File.WriteAllBytes(toFileSave, d);
+                    }
+                }
+                else
+                {
+                    using (var response = await dbx.Files.DownloadAsync(file))
+                    {
+                        var s = response.GetContentAsByteArrayAsync();
+                        s.Wait();
+                        var d = s.Result;
+                        File.WriteAllBytes(toFileSave, d);
+                    }
                 }
             }
         }
@@ -411,8 +426,7 @@ namespace CloudServer
                 string file = fromFileDownload;
                 using (var mem = new MemoryStream(File.ReadAllBytes(file)))
                 {
-                    var updated = dbx.Files.UploadAsync(toFileSave, WriteMode.Overwrite.Instance, body: mem);
-                    updated.Wait();
+                    var updated = await dbx.Files.UploadAsync(toFileSave, WriteMode.Overwrite.Instance, body: mem);
                 }
             }
         }
@@ -421,8 +435,7 @@ namespace CloudServer
         {
             using (var dbx = new DropboxClient(key))
             {
-                var updated = dbx.Files.DeleteV2Async(itemNeedToDelete, null);
-                updated.Wait();
+                var updated = await dbx.Files.DeleteV2Async(itemNeedToDelete, null);
             }
         }
 
@@ -430,8 +443,7 @@ namespace CloudServer
         {
             using (var dbx = new DropboxClient(key))
             {
-                var updated = dbx.Files.CreateFolderV2Async(folderName, true);
-                updated.Wait();
+                var updated = await dbx.Files.CreateFolderV2Async(folderName, true);
             }
         }
     }
