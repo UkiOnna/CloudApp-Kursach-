@@ -251,7 +251,7 @@ namespace CloudServer
 
                 using (var context = new DropBoxContext())
                 {
-                    if (context.Users.Any(item => item.Key == key)) throw new Exception();
+                    if (context.Users.Any(item => item.Key == key||item.Login==NewCommand.Key)) throw new Exception();
 
                     User user = new User { Login = NewCommand.Key, Key = key, Password = NewCommand.FileWay };
                     context.Users.Add(user);
@@ -260,14 +260,13 @@ namespace CloudServer
                     answer.Add("Регистрация прошла успешно");
                     MySocket.Send(ConvertList.ListToByteArray(answer));
                     answer.Clear();
-
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 answer.Add(REGISTRATION + " " + "false");
-                answer.Add("Ошибка при регистрации пользователя");
+                answer.Add("Пльзователь с таким логином или ключом уже присутствует");
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
             }
