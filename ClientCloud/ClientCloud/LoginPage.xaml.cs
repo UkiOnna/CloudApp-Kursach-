@@ -24,7 +24,7 @@ namespace ClientCloud
 
         private void EnterClick(object sender, RoutedEventArgs e)
         {
-            Task task = client.SendMessage("Login", loginText.Text, passwordText.Password);
+            Task task = client.SendCommand("Login", loginText.Text, passwordText.Password);
             task.Wait();
             Entering();
         }

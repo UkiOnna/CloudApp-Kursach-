@@ -165,18 +165,18 @@ namespace CloudServer
 
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
-            }
+        }
             catch (AggregateException)
             {
                 Console.WriteLine("Ошибка при загрузке,возможно вы выбрали не папку а файл для загрузки файла");
                 NewCommand.Key = "false";
                 answer.Clear();
                 answer.Add(UPLOAD_FILE + " false");
-                answer.Add("Ошибка при загрузке,возможно вы выбрали не паку для загрузки файла");
+                answer.Add("Ошибка при загрузке,возможно вы выбрали не папку для загрузки файла");
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
             }
-        }
+}
 
         public void DeleteFile()
         {

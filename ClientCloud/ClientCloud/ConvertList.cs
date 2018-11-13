@@ -31,7 +31,7 @@ namespace ClientCloud
                 List<string> obj = (List<string>)binForm.Deserialize(memStream);
                 return obj;
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 List<string> tempList = new List<string>();
                 tempList.Add("false");

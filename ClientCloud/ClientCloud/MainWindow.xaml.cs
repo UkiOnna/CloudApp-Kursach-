@@ -22,8 +22,8 @@ namespace ClientCloud
         {
             InitializeComponent();
             client = new ClientWork();
-            client.SendMessage("start", "");
-            client.GetMessage();
+            client.SendCommand("start", "");
+            client.GetCommand();
             Content = new LoginPage(this, client);
         }
 

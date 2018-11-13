@@ -14,6 +14,18 @@ namespace ClientCloud
 {
     public class ClientWork
     {
+        private const string START = "start";
+        private const string GET_KEY = "GetKey";
+        private const string GET_FILES = "fileList";
+        private const string DOWNLOAD_FILE = "DownloadFile";
+        private const string DOWNLOAD_FOLDER = "DownloadFolder";
+        private const string UPLOAD_FILE = "UploadFile";
+        private const string DELETE_ITEM = "DeleteItem";
+        private const string CREATE_FOLDER = "CreateFolder";
+        private const string REGISTRATION = "Registration";
+        private const string LOGIN = "Login";
+        private const string GET_LOG = "GetLog";
+
         private Socket chatSocket;
         private IPEndPoint endPoint;
         public bool IsConnect { get; set; }
@@ -35,7 +47,7 @@ namespace ClientCloud
         {
             isWorking = false;
             chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            endPoint = new IPEndPoint(IPAddress.Parse("10.2.3.78"), 3535);
+            endPoint = new IPEndPoint(IPAddress.Parse("10.3.3.40"), 3535);
             IsKey = null;
             IsRegistration = null;
             IsLogin = null;
@@ -56,7 +68,7 @@ namespace ClientCloud
             }
         }
 
-        public Task ThrowLetter(string command, string key, string file)
+        public Task ThrowCommand(string command, string key, string file)
         {
 
             return Task.Run(() =>
@@ -75,7 +87,7 @@ namespace ClientCloud
         }
 
 
-        public Task SendMessage(string messg, string key, string file = "")
+        public Task SendCommand(string messg, string key, string file = "")
         {
             downloadSuccess = null;
             refreshSuccess = null;
@@ -85,25 +97,25 @@ namespace ClientCloud
             isOperationDone = false;
             return Task.Run(async () =>
             {
-                await ThrowLetter(messg, key, file);
+                await ThrowCommand(messg, key, file);
             });
         }
 
 
         public void CloseConnect()
         {
-            Task task = ThrowLetter("4", "", "");
+            Task task = ThrowCommand("4", "", "");
             task.Wait();
             IsConnect = false;
             chatSocket.Close();
         }
 
-        public async void GetMessage()
+        public async void GetCommand()
         {
-            await GetLetter();
+            await GetAnswer();
         }
 
-        public Task GetLetter()
+        public Task GetAnswer()
         {
             return Task.Run(() =>
             {
@@ -136,105 +148,105 @@ namespace ClientCloud
 
                         isStrings = true;
 
-                        if (answer.First() == "GetKey false")
+                        if (answer.First() == GET_KEY+" false")
                         {
                             IsKey = false;
                             MessageBox.Show("Вы ввели неверный ключ");
 
                         }
 
-                        else if (answer.First() == "GetKey true")
+                        else if (answer.First() == GET_KEY+" true")
                         {
                             IsKey = true;
 
                         }
 
-                        else if (answer.First() == "DownloadFile" || answer.First() == "DownloadFolder")
+                        else if (answer.First() == DOWNLOAD_FILE || answer.First() == DOWNLOAD_FOLDER)
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
                         }
 
-                        else if (answer.First() == "UploadFile")
+                        else if (answer.First() == UPLOAD_FILE)
                         {
                             downloadSuccess = answer[1];
                             isOperationDone = true;
                             operationMessage = answer[1];
                         }
 
-                        else if (answer.First() == "UploadFile false")
+                        else if (answer.First() == UPLOAD_FILE+" false")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
                         }
 
-                        else if (answer.First() == "DeleteItem")
+                        else if (answer.First() == DELETE_ITEM)
                         {
                             downloadSuccess = answer[1];
                             isOperationDone = true;
                             operationMessage = answer[1];
                         }
 
-                        else if (answer.First() == "DeleteItem false")
+                        else if (answer.First() == DELETE_ITEM+" false")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
                         }
 
-                        else if (answer.First() == "CreateFolder")
+                        else if (answer.First() == CREATE_FOLDER)
                         {
                             downloadSuccess = answer[1];
                             isOperationDone = true;
                             operationMessage = answer[1];
                         }
 
-                        else if (answer.First() == "CreateFolder false")
+                        else if (answer.First() == CREATE_FOLDER+" false")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
                         }
 
-                        else if (answer.First() == "GetLog true")
+                        else if (answer.First() == GET_LOG+" true")
                         {
                             downloadSuccess = answer[1];
                             isLogWindowOpen = true;
                             LogList = answer;
                         }
 
-                        else if (answer.First() == "GetLog false")
+                        else if (answer.First() == GET_LOG+" false")
                         {
                             downloadSuccess = answer[1];
                             isLogWindowOpen = true;
                             LogList = answer;
                         }
 
-                        else if (answer.First() == "Registration true")
+                        else if (answer.First() == REGISTRATION+" true")
                         {
                             IsRegistration = true;
                             MessageBox.Show(answer[1]);
                         }
 
-                        else if (answer.First() == "Registration false")
+                        else if (answer.First() == REGISTRATION+" false")
                         {
                             IsRegistration = false;
                             MessageBox.Show(answer[1]);
                         }
 
-                        else if (answer.First() == "Login false")
+                        else if (answer.First() == LOGIN+" false")
                         {
                             IsLogin = false;
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
                         }
 
-                        else if (answer.First() == "Login true")
+                        else if (answer.First() == LOGIN+" true")
                         {
-                            SendMessage("GetFiles", "");
+                            SendCommand("GetFiles", "");
                         }
 
 
 
-                        else if (fileWays.First().Key == "fileList")
+                        else if (fileWays.First().Key == GET_FILES)
                         {
                             refreshSuccess = "ha";
                             IsLogin = true;

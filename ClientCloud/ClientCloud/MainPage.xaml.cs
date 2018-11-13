@@ -56,7 +56,7 @@ namespace ClientCloud
                     if (fileNameForDownload[2] == 'i')
                     {
                         fileNameForDownload = fileNameForDownload.Remove(0, 6);
-                        Task task = client.SendMessage("DownloadFile", fileForUpload + fileNameForDownload, fileElement.Value);
+                        Task task = client.SendCommand("DownloadFile", fileForUpload + fileNameForDownload, fileElement.Value);
                         task.Wait();
                         isDownload = true;
                         Downloading();
@@ -64,7 +64,7 @@ namespace ClientCloud
                     else
                     {
                         fileNameForDownload = fileNameForDownload.Remove(0, 8);
-                        Task task = client.SendMessage("DownloadFolder", fileForUpload + fileNameForDownload, fileElement.Value);
+                        Task task = client.SendCommand("DownloadFolder", fileForUpload + fileNameForDownload, fileElement.Value);
                         task.Wait();
                         isDownload = true;
                         Downloading();
@@ -87,7 +87,7 @@ namespace ClientCloud
         {
             if (!client.isLogWindowOpen)
             {
-                Task task = client.SendMessage("GetLog", "");
+                Task task = client.SendCommand("GetLog", "");
                 task.Wait();
                 GettingLog();
             }
@@ -124,7 +124,7 @@ namespace ClientCloud
                     folderForUload = "";
                 }
 
-                Task task = client.SendMessage("UploadFile", fileForUpload, folderForUload + "/" + openFileDialog.SafeFileName);
+                Task task = client.SendCommand("UploadFile", fileForUpload, folderForUload + "/" + openFileDialog.SafeFileName);
                 task.Wait();
                 Downloading();
             }
@@ -150,7 +150,7 @@ namespace ClientCloud
                             fileElement = keyValue;
                         }
                     }
-                    Task task = client.SendMessage("DeleteItem", fileElement.Value);
+                    Task task = client.SendCommand("DeleteItem", fileElement.Value);
                     task.Wait();
                     Downloading();
                 }
@@ -163,7 +163,7 @@ namespace ClientCloud
 
         private void RefreshClick(object sender, RoutedEventArgs e)
         {
-            Task task = client.SendMessage("GetFiles", "");
+            Task task = client.SendCommand("GetFiles", "");
             task.Wait();
             RefreshingThread();
             listFiles.Items.Clear();
@@ -188,7 +188,7 @@ namespace ClientCloud
                                 fileElement = keyValue;
                             }
                         }
-                        Task task = client.SendMessage("CreateFolder", fileElement.Value + "/" + fileNameWindow.FileName);
+                        Task task = client.SendCommand("CreateFolder", fileElement.Value + "/" + fileNameWindow.FileName);
                         task.Wait();
                         Downloading();
                     }
@@ -222,7 +222,7 @@ namespace ClientCloud
                 }
                 else
                 {
-                    Task task = client.SendMessage("GetFiles", "");
+                    Task task = client.SendCommand("GetFiles", "");
                     task.Wait();
                     Dispatcher.Invoke(() => RefreshingThread());
                     Dispatcher.Invoke(() => listFiles.Items.Clear());

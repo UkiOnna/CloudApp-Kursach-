@@ -44,7 +44,7 @@ namespace ClientCloud
             
             else
             {
-                Task task = client.SendMessage("GetKey", key);
+                Task task = client.SendCommand("GetKey", key);
                 task.Wait();
                 CheckingKey();
             }
@@ -89,7 +89,7 @@ namespace ClientCloud
 
         private void CheckingRegistration()
         {
-            Task task = client.SendMessage("Registration",loginText.Text,passwordText.Text);
+            Task task = client.SendCommand("Registration",loginText.Text,passwordText.Text);
             task.Wait();
             Registrating();
         }
