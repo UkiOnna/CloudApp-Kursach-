@@ -35,6 +35,7 @@ namespace ClientCloud
             if (listFiles.SelectedItem != null)
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
+
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     fileForUpload = saveFileDialog.FileName;
@@ -45,6 +46,7 @@ namespace ClientCloud
 
                     string fileName = (string)listFiles.SelectedItem;
                     KeyValuePair<string, string> fileElement = new KeyValuePair<string, string>();
+
                     foreach (KeyValuePair<string, string> keyValue in client.fileList)
                     {
                         if (fileName == keyValue.Key)
@@ -52,7 +54,9 @@ namespace ClientCloud
                             fileElement = keyValue;
                         }
                     }
+
                     string fileNameForDownload = fileElement.Key.Trim();
+
                     if (fileNameForDownload[2] == 'i')
                     {
                         fileNameForDownload = fileNameForDownload.Remove(0, 6);
@@ -61,6 +65,7 @@ namespace ClientCloud
                         isDownload = true;
                         Downloading();
                     }
+
                     else
                     {
                         fileNameForDownload = fileNameForDownload.Remove(0, 8);
@@ -69,8 +74,8 @@ namespace ClientCloud
                         isDownload = true;
                         Downloading();
                     }
-                    
                 }
+
                 else
                 {
                     fileForUpload = "";
@@ -91,6 +96,7 @@ namespace ClientCloud
                 task.Wait();
                 GettingLog();
             }
+
             else
             {
                 MessageBox.Show("Окно лога уже окрыто");
@@ -100,12 +106,12 @@ namespace ClientCloud
         private void UploadClick(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+
             if (openFileDialog.ShowDialog() == true)
             {
                 fileForUpload = openFileDialog.FileName;
-
-
                 string folderForUload;
+
                 if (listFiles.SelectedItem != null)
                 {
                     string fileName = (string)listFiles.SelectedItem;
@@ -117,8 +123,10 @@ namespace ClientCloud
                             fileElement = keyValue;
                         }
                     }
+
                     folderForUload = fileElement.Value;
                 }
+
                 else
                 {
                     folderForUload = "";
@@ -139,6 +147,7 @@ namespace ClientCloud
             if (listFiles.SelectedItem != null)
             {
                 var dialogResult = MessageBox.Show("Вы уверены что хотите удалить это?", "Удаление", MessageBoxButton.YesNo);
+
                 if (dialogResult == MessageBoxResult.Yes)
                 {
                     string fileName = (string)listFiles.SelectedItem;
@@ -150,11 +159,13 @@ namespace ClientCloud
                             fileElement = keyValue;
                         }
                     }
+
                     Task task = client.SendCommand("DeleteItem", fileElement.Value);
                     task.Wait();
                     Downloading();
                 }
             }
+
             else
             {
                 MessageBox.Show("Выберите файл который хотите удалить");
@@ -181,6 +192,7 @@ namespace ClientCloud
                     {
                         string fileName = (string)listFiles.SelectedItem;
                         KeyValuePair<string, string> fileElement = new KeyValuePair<string, string>();
+
                         foreach (KeyValuePair<string, string> keyValue in client.fileList)
                         {
                             if (fileName == keyValue.Key)
@@ -188,6 +200,7 @@ namespace ClientCloud
                                 fileElement = keyValue;
                             }
                         }
+
                         Task task = client.SendCommand("CreateFolder", fileElement.Value + "/" + fileNameWindow.FileName);
                         task.Wait();
                         Downloading();
@@ -196,10 +209,8 @@ namespace ClientCloud
                     {
                         MessageBox.Show("Недопустимое имя папки");
                     }
-
                 }
             }
-
         }
 
         private void Downloading()
@@ -212,14 +223,14 @@ namespace ClientCloud
                     client.isWorking = true;
                     Dispatcher.Invoke(() => doButtonsActive(false));
                 }
-                if (isDownload == true || client.isOperationDone==false)
+                if (isDownload == true || client.isOperationDone == false)
                 {
                     isDownload = false;
                     Dispatcher.Invoke(() => loading.IsBusy = false);
                     Dispatcher.Invoke(() => doButtonsActive(true));
                     client.isWorking = false;
-
                 }
+
                 else
                 {
                     Task task = client.SendCommand("GetFiles", "");
@@ -227,7 +238,7 @@ namespace ClientCloud
                     Dispatcher.Invoke(() => RefreshingThread());
                     Dispatcher.Invoke(() => listFiles.Items.Clear());
                 }
-                
+
                 Dispatcher.Run();
             }));
 
@@ -243,16 +254,17 @@ namespace ClientCloud
             Thread newWindowThread = new Thread(new ThreadStart(() =>
             {
                 Dispatcher.Invoke(() => loading.IsBusy = true);
+
                 while (client.refreshSuccess == null)
                 {
                     Dispatcher.Invoke(() => doButtonsActive(false));
                     client.isWorking = true;
                 }
+
                 Dispatcher.Invoke(() => loading.IsBusy = false);
                 Dispatcher.Invoke(() => doButtonsActive(true));
                 client.isWorking = false;
                 Dispatcher.Invoke(() => Refreshing());
-
                 Dispatcher.Run();
             }));
 
@@ -292,17 +304,20 @@ namespace ClientCloud
             Thread newWindowThread = new Thread(new ThreadStart(() =>
             {
                 Dispatcher.Invoke(() => loading.IsBusy = true);
+
                 while (client.downloadSuccess == null)
                 {
                     Dispatcher.Invoke(() => doButtonsActive(false));
                     client.isWorking = true;
                 }
+
                 Dispatcher.Invoke(() => loading.IsBusy = false);
                 Dispatcher.Invoke(() => doButtonsActive(true));
                 client.isWorking = false;
+
                 if (client.isLogWindowOpen)
                 {
-                    Dispatcher.Invoke(() => window.Content=new LogPage(window,client));
+                    Dispatcher.Invoke(() => window.Content = new LogPage(window, client));
                 }
 
                 Dispatcher.Run();

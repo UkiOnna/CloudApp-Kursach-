@@ -18,6 +18,7 @@ namespace ClientCloud
     public partial class MainWindow : Window
     {
         ClientWork client;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -30,19 +31,21 @@ namespace ClientCloud
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = false;
+
             if (client.isWorking)
             {
                 e.Cancel = true;
             }
+
             else
             {
                 client.CloseConnect();
             }
+
             if (e.Cancel)
             {
                 MessageBox.Show("Вы неможете закрыть приложение во время работы");
             }
         }
-
     }
 }

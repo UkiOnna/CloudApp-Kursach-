@@ -10,6 +10,7 @@ namespace ClientCloud
     {
         private Window window;
         private ClientWork client;
+
         public LoginPage(Window window, ClientWork client)
         {
             this.window = window;
@@ -34,24 +35,29 @@ namespace ClientCloud
             Thread newWindowThread = new Thread(new ThreadStart(() =>
             {
                 Dispatcher.Invoke(() => loading.IsBusy = true);
+
                 while (client.IsLogin == null)
                 {
                     client.isWorking = true;
                     Dispatcher.Invoke(() => buttonEnter.IsEnabled = false);
                     Dispatcher.Invoke(() => buttonRegistration.IsEnabled = false);
                 }
+
                 Dispatcher.Invoke(() => loading.IsBusy = false);
+
                 if (client.IsLogin == true)
                 {
                     client.isWorking = false;
                     Dispatcher.Invoke(() => window.Content = new MainPage(window, client));
                 }
+
                 else
                 {
                     client.isWorking = false;
                     Dispatcher.Invoke(() => buttonRegistration.IsEnabled = true);
                     Dispatcher.Invoke(() => buttonEnter.IsEnabled = true);
                 }
+
                 Dispatcher.Run();
             }));
 

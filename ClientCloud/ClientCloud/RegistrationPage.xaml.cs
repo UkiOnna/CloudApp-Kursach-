@@ -22,7 +22,7 @@ namespace ClientCloud
         private Window window;
         private string key;
         private ClientWork client;
-        private char[] letters = { '\\', '/', ':', '?', '*', '"', '|',' ' };
+        private char[] letters = { '\\', '/', ':', '?', '*', '"', '|', ' ' };
 
         public RegistrationPage(Window window, ClientWork client)
         {
@@ -36,12 +36,13 @@ namespace ClientCloud
         private void Registration(object sender, RoutedEventArgs e)
         {
             key = keyText.Text;
-            if (key == string.Empty ||loginText.Text==string.Empty||passwordText.Text.Length<4|| loginText.Text.Any(symbol => letters.Any(sub => sub == symbol))==true
-                || passwordText.Text.Any(symbol => letters.Any(sub => sub == symbol)) == true|| loginText.Text.Length<1)
+
+            if (key == string.Empty || loginText.Text == string.Empty || passwordText.Text.Length < 4 || loginText.Text.Any(symbol => letters.Any(sub => sub == symbol)) == true
+                || passwordText.Text.Any(symbol => letters.Any(sub => sub == symbol)) == true || loginText.Text.Length < 1)
             {
                 Ex();
             }
-            
+
             else
             {
                 Task task = client.SendCommand("GetKey", key);
@@ -60,23 +61,28 @@ namespace ClientCloud
             Thread newWindowThread = new Thread(new ThreadStart(() =>
             {
                 Dispatcher.Invoke(() => loading.IsBusy = true);
+
                 while (client.IsKey == null)
                 {
                     client.isWorking = true;
                     Dispatcher.Invoke(() => registrationButton.IsEnabled = false);
                     Dispatcher.Invoke(() => backButton.IsEnabled = false);
                 }
+
                 Dispatcher.Invoke(() => loading.IsBusy = false);
+
                 if (client.IsKey == true)
                 {
                     Dispatcher.Invoke(() => CheckingRegistration());
                 }
+
                 else
                 {
                     client.isWorking = false;
                     Dispatcher.Invoke(() => registrationButton.IsEnabled = true);
                     Dispatcher.Invoke(() => backButton.IsEnabled = true);
                 }
+
                 Dispatcher.Run();
             }));
 
@@ -89,7 +95,7 @@ namespace ClientCloud
 
         private void CheckingRegistration()
         {
-            Task task = client.SendCommand("Registration",loginText.Text,passwordText.Text);
+            Task task = client.SendCommand("Registration", loginText.Text, passwordText.Text);
             task.Wait();
             Registrating();
         }
@@ -99,24 +105,29 @@ namespace ClientCloud
             Thread newWindowThread = new Thread(new ThreadStart(() =>
             {
                 Dispatcher.Invoke(() => loading.IsBusy = true);
+
                 while (client.IsRegistration == null)
                 {
                     client.isWorking = true;
                     Dispatcher.Invoke(() => registrationButton.IsEnabled = false);
                     Dispatcher.Invoke(() => backButton.IsEnabled = false);
                 }
+
                 Dispatcher.Invoke(() => loading.IsBusy = false);
+
                 if (client.IsRegistration == true)
                 {
                     client.isWorking = false;
                     Dispatcher.Invoke(() => window.Content = new LoginPage(window, client));
                 }
+
                 else
                 {
                     client.isWorking = false;
                     Dispatcher.Invoke(() => registrationButton.IsEnabled = true);
                     Dispatcher.Invoke(() => backButton.IsEnabled = true);
                 }
+
                 Dispatcher.Run();
             }));
 

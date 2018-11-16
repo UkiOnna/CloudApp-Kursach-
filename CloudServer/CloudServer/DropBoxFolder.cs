@@ -19,6 +19,7 @@ namespace CloudServer
             FullName = FullName;
             Elements = new List<DropBoxElement>();
         }
+
         public DropBoxFolder(FolderMetadata metadata)
         {
             FolderMetadata = metadata;

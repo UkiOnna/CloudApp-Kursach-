@@ -27,6 +27,8 @@ namespace CloudServer
         private const string REGISTRATION = "Registration";
         private const string LOGIN = "Login";
         private const string GET_LOG = "GetLog";
+        private const string EXIT = "Exit";
+        private string ip;
         Dictionary<long, CommandWork> users;
         private long counter;
         
@@ -63,7 +65,7 @@ namespace CloudServer
             }
             finally
             {
-                Console.WriteLine("Poka");
+                Console.WriteLine("Все завершилось");
                 sok.Close();
                 for(int i = 0; i < users.Count; i++)
                 {
@@ -92,16 +94,13 @@ namespace CloudServer
                                     users[sokIndx].Start();
                                     users[sokIndx].NewCommand = null;
                                 }
-                                else if (users[sokIndx].NewCommand.Command == "4")
+
+                                else if (users[sokIndx].NewCommand.Command == EXIT)
                                 {
                                     users[sokIndx].Exit();
                                     users.Remove(sokIndx);
-                                    Console.WriteLine("Пока");
-
+                                    Console.WriteLine("Отключился ",sokIndx);
                                 }
-
-
-
 
                                 else if (users[sokIndx].NewCommand.Command == GET_KEY)
                                 {
@@ -156,12 +155,6 @@ namespace CloudServer
                                     users[sokIndx].GetLog();
                                     users[sokIndx].NewCommand = null;
                                 }
-
-
-
-                                else
-                                {
-                                }
                             }
                         }
 
@@ -176,6 +169,20 @@ namespace CloudServer
 
                 }
             });
+        }
+
+        public string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    this.ip = ip.ToString();
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
     }
 }

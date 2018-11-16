@@ -143,3 +143,20 @@ C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.4\CloudServer\CloudServer\ob
 C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.4\CloudServer\CloudServer\obj\Debug\CloudServer.csproj.CopyComplete
 C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.4\CloudServer\CloudServer\obj\Debug\CloudServer.exe
 C:\Users\СикировТ\Desktop\Clouds\CloudApp 1.4\CloudServer\CloudServer\obj\Debug\CloudServer.pdb
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Debug\CloudServer.exe.config
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Debug\CloudServer.exe
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Debug\CloudServer.pdb
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Debug\Dropbox.Api.dll
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Debug\EntityFramework.dll
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Debug\Newtonsoft.Json.dll
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Debug\Dropbox.Api.xml
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Debug\EntityFramework.xml
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Debug\Newtonsoft.Json.xml
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Debug\ru\EntityFramework.resources.dll
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\obj\Debug\CloudServer.csprojAssemblyReference.cache
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\obj\Debug\CloudServer.csproj.CoreCompileInputs.cache
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\obj\Debug\CloudServer.csproj.CopyComplete
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\obj\Debug\CloudServer.exe
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\obj\Debug\CloudServer.pdb

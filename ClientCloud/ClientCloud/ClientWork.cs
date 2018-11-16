@@ -25,6 +25,7 @@ namespace ClientCloud
         private const string REGISTRATION = "Registration";
         private const string LOGIN = "Login";
         private const string GET_LOG = "GetLog";
+        private const string EXIT = "Exit";
 
         private Socket chatSocket;
         private IPEndPoint endPoint;
@@ -47,7 +48,7 @@ namespace ClientCloud
         {
             isWorking = false;
             chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            endPoint = new IPEndPoint(IPAddress.Parse("10.3.3.40"), 3535);
+            endPoint = new IPEndPoint(IPAddress.Parse("10.2.3.78"), 3535);
             IsKey = null;
             IsRegistration = null;
             IsLogin = null;
@@ -104,7 +105,7 @@ namespace ClientCloud
 
         public void CloseConnect()
         {
-            Task task = ThrowCommand("4", "", "");
+            Task task = ThrowCommand("Exit", "", "");
             task.Wait();
             IsConnect = false;
             chatSocket.Close();
@@ -148,14 +149,14 @@ namespace ClientCloud
 
                         isStrings = true;
 
-                        if (answer.First() == GET_KEY+" false")
+                        if (answer.First() == GET_KEY + " false")
                         {
                             IsKey = false;
                             MessageBox.Show("Вы ввели неверный ключ");
 
                         }
 
-                        else if (answer.First() == GET_KEY+" true")
+                        else if (answer.First() == GET_KEY + " true")
                         {
                             IsKey = true;
 
@@ -174,7 +175,7 @@ namespace ClientCloud
                             operationMessage = answer[1];
                         }
 
-                        else if (answer.First() == UPLOAD_FILE+" false")
+                        else if (answer.First() == UPLOAD_FILE + " false")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
@@ -187,7 +188,7 @@ namespace ClientCloud
                             operationMessage = answer[1];
                         }
 
-                        else if (answer.First() == DELETE_ITEM+" false")
+                        else if (answer.First() == DELETE_ITEM + " false")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
@@ -200,46 +201,46 @@ namespace ClientCloud
                             operationMessage = answer[1];
                         }
 
-                        else if (answer.First() == CREATE_FOLDER+" false")
+                        else if (answer.First() == CREATE_FOLDER + " false")
                         {
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
                         }
 
-                        else if (answer.First() == GET_LOG+" true")
+                        else if (answer.First() == GET_LOG + " true")
                         {
                             downloadSuccess = answer[1];
                             isLogWindowOpen = true;
                             LogList = answer;
                         }
 
-                        else if (answer.First() == GET_LOG+" false")
+                        else if (answer.First() == GET_LOG + " false")
                         {
                             downloadSuccess = answer[1];
                             isLogWindowOpen = true;
                             LogList = answer;
                         }
 
-                        else if (answer.First() == REGISTRATION+" true")
+                        else if (answer.First() == REGISTRATION + " true")
                         {
                             IsRegistration = true;
                             MessageBox.Show(answer[1]);
                         }
 
-                        else if (answer.First() == REGISTRATION+" false")
+                        else if (answer.First() == REGISTRATION + " false")
                         {
                             IsRegistration = false;
                             MessageBox.Show(answer[1]);
                         }
 
-                        else if (answer.First() == LOGIN+" false")
+                        else if (answer.First() == LOGIN + " false")
                         {
                             IsLogin = false;
                             downloadSuccess = answer[1];
                             MessageBox.Show(answer[1]);
                         }
 
-                        else if (answer.First() == LOGIN+" true")
+                        else if (answer.First() == LOGIN + " true")
                         {
                             SendCommand("GetFiles", "");
                         }
@@ -256,7 +257,6 @@ namespace ClientCloud
                                 MessageBox.Show(operationMessage);
                             }
                         }
-
                     }
                 }
 
@@ -264,7 +264,7 @@ namespace ClientCloud
                 {
                     MessageBox.Show(ex.Message);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }

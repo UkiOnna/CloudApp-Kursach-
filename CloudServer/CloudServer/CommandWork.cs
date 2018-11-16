@@ -42,10 +42,6 @@ namespace CloudServer
             IsIndexChange = false;
             fileWays = new Dictionary<string, string>();
             answer = new List<string>();
-            using (var context = new DropBoxContext())
-            {
-                context.Users.ToList();
-            }
         }
 
         public void Start()
@@ -65,7 +61,6 @@ namespace CloudServer
                 stringBuilder.Append(Encoding.Default.GetString(buffer));
             }
             while (MySocket.Available > 0);
-
 
             NewCommand = JsonConvert.DeserializeObject<Message>(stringBuilder.ToString());
         }
@@ -111,14 +106,12 @@ namespace CloudServer
             task.Wait();
             DisplayAll(facade.Folders.First(), 0);
             MySocket.Send(ConvertList.FileWaysToByteArray(fileWays));
-
         }
 
         public void DownloadFile()
         {
             try
             {
-
                 fromFileDownload = NewCommand.FileWay;
                 toFileSave = NewCommand.Key;
                 var task = Task.Run(DropBoxDownloadFile);
@@ -149,6 +142,7 @@ namespace CloudServer
                 task.Wait();
                 answer.Add(UPLOAD_FILE);
                 answer.Add("Файл успешно загружен");
+
                 using (var context = new DropBoxContext())
                 {
                     FileInfo info = new FileInfo();
@@ -165,7 +159,7 @@ namespace CloudServer
 
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
-        }
+            }
             catch (AggregateException)
             {
                 Console.WriteLine("Ошибка при загрузке,возможно вы выбрали не папку а файл для загрузки файла");
@@ -176,7 +170,7 @@ namespace CloudServer
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
             }
-}
+        }
 
         public void DeleteFile()
         {
@@ -187,6 +181,7 @@ namespace CloudServer
                 task.Wait();
                 answer.Add(DELETE_ITEM);
                 answer.Add("Файл удален");
+
                 using (var context = new DropBoxContext())
                 {
                     if (context.FilesInfo.ToList().Count != 0)
@@ -198,8 +193,8 @@ namespace CloudServer
                             info.IsDeleted = true;
                             info.DeletedDate = DateTime.Now;
                             FileInfo oldInfo = context.FilesInfo.ToList().Find(item => item.UserId == userId && item.IsDeleted == false && item.FileWay == itemNeedToDelete);
-
                             int index = context.FilesInfo.ToList().IndexOf(oldInfo);
+
                             if (index != -1)
                                 context.FilesInfo.ToList()[index] = info;
 
@@ -209,8 +204,8 @@ namespace CloudServer
                 }
                 MySocket.Send(ConvertList.ListToByteArray(answer));
                 answer.Clear();
-
             }
+
             catch (AggregateException)
             {
                 NewCommand.Key = "false";
@@ -251,7 +246,7 @@ namespace CloudServer
 
                 using (var context = new DropBoxContext())
                 {
-                    if (context.Users.Any(item => item.Key == key||item.Login==NewCommand.Key)) throw new Exception();
+                    if (context.Users.Any(item => item.Key == key || item.Login == NewCommand.Key)) throw new Exception();
 
                     User user = new User { Login = NewCommand.Key, Key = key, Password = NewCommand.FileWay };
                     context.Users.Add(user);
@@ -262,6 +257,7 @@ namespace CloudServer
                     answer.Clear();
                 }
             }
+
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -295,16 +291,14 @@ namespace CloudServer
                     MySocket.Send(ConvertList.ListToByteArray(answer));
                     answer.Clear();
                 }
+
                 else
                 {
                     throw new Exception();
                 }
-
-
             }
             catch (Exception)
             {
-
                 answer.Add(LOGIN + " " + "false");
                 answer.Add("Вы ввели нправильный логин или пароль");
                 MySocket.Send(ConvertList.ListToByteArray(answer));
@@ -321,6 +315,7 @@ namespace CloudServer
                     if (context.FilesInfo.ToList().Count != 0)
                     {
                         answer.Add(GET_LOG + " true");
+
                         foreach (var a in context.FilesInfo.ToList())
                         {
                             if (a.IsDeleted)
@@ -334,6 +329,7 @@ namespace CloudServer
                                 answer.Add(a.FileName + '-' + a.CreationDate.ToShortDateString() + " " + a.CreationDate.ToShortTimeString() + '-' + " ");
                             }
                         }
+
                         MySocket.Send(ConvertList.ListToByteArray(answer));
                         answer.Clear();
                     }
@@ -376,11 +372,13 @@ namespace CloudServer
                     fileWays.Add(new String(' ', offset) + "[File]" + element.Name, element.FullName);
                     Console.WriteLine(element.FullName);
                 }
+
                 else
                 {
                     fileWays.Add(new String(' ', offset) + "[Folder]" + element.Name, element.FullName);
                     Console.WriteLine(element.FullName);
                 }
+
                 if (element.IsFolder)
                 {
                     DisplayAll(element as DropBoxFolder, offset + 2);
@@ -392,7 +390,6 @@ namespace CloudServer
         {
             using (var dbx = new DropboxClient(key))
             {
-
                 string file = fromFileDownload;
                 if (NewCommand.Command == DOWNLOAD_FOLDER)
                 {
@@ -405,6 +402,7 @@ namespace CloudServer
                         File.WriteAllBytes(toFileSave, d);
                     }
                 }
+
                 else
                 {
                     using (var response = await dbx.Files.DownloadAsync(file))

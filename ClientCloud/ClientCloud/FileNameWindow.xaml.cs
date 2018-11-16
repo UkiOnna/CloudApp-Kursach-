@@ -25,6 +25,7 @@ namespace ClientCloud
         {
             this.DialogResult = true;
         }
+
         public string FileName
         {
             get { return FileNameBox.Text.Trim(); }

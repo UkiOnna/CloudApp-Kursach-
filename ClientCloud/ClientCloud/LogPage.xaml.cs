@@ -20,11 +20,12 @@ namespace ClientCloud
         private Window window;
         private ClientWork client;
 
-        public LogPage(Window win,ClientWork user)
+        public LogPage(Window win, ClientWork user)
         {
             InitializeComponent();
             window = win;
             client = user;
+
             if (client.LogList.Count > 1)
             {
                 for (int i = 1; i < client.LogList.Count; i++)

@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace ClientCloud
 {
-   public static class ConvertList
+    public static class ConvertList
     {
-       public static byte[] ListToByteArray(List<string> obj)
+
+        public static byte[] ListToByteArray(List<string> obj)
         {
             if (obj == null)
                 return null;
@@ -20,7 +21,7 @@ namespace ClientCloud
             return ms.ToArray();
         }
 
-       public static List<string> ByteArrayToList(byte[] arrBytes)
+        public static List<string> ByteArrayToList(byte[] arrBytes)
         {
             try
             {
@@ -31,7 +32,7 @@ namespace ClientCloud
                 List<string> obj = (List<string>)binForm.Deserialize(memStream);
                 return obj;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 List<string> tempList = new List<string>();
                 tempList.Add("false");
