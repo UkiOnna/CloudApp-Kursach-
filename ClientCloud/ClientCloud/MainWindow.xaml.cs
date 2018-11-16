@@ -22,11 +22,7 @@ namespace ClientCloud
         public MainWindow()
         {
             InitializeComponent();
-            client = new ClientWork();
-            client.SendCommand("start", "");
-            client.GetCommand();
-            Content = new LoginPage(this, client);
-        }
+        }   
 
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -46,6 +42,14 @@ namespace ClientCloud
             {
                 MessageBox.Show("Вы неможете закрыть приложение во время работы");
             }
+        }
+
+        private void Connect(object sender, RoutedEventArgs e)
+        {
+            client = new ClientWork(ipText.Text);
+            client.SendCommand("start", "");
+            client.GetCommand();
+            Content = new LoginPage(this, client);
         }
     }
 }

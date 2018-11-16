@@ -44,11 +44,11 @@ namespace ClientCloud
         public bool isOperationDone { get; set; }
         private string operationMessage;
 
-        public ClientWork()
+        public ClientWork(string ip)
         {
             isWorking = false;
             chatSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            endPoint = new IPEndPoint(IPAddress.Parse("10.2.3.78"), 3535);
+            endPoint = new IPEndPoint(IPAddress.Parse(ip), 3535);
             IsKey = null;
             IsRegistration = null;
             IsLogin = null;

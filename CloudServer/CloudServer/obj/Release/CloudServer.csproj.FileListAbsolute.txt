@@ -1,0 +1,17 @@
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Release\CloudServer.exe.config
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Release\CloudServer.exe
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Release\CloudServer.pdb
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Release\Dropbox.Api.dll
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Release\EntityFramework.dll
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Release\EntityFramework.SqlServer.dll
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Release\Newtonsoft.Json.dll
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Release\Dropbox.Api.xml
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Release\EntityFramework.xml
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Release\EntityFramework.SqlServer.xml
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Release\Newtonsoft.Json.xml
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\bin\Release\ru\EntityFramework.resources.dll
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\obj\Release\CloudServer.csprojAssemblyReference.cache
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\obj\Release\CloudServer.csproj.CoreCompileInputs.cache
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\obj\Release\CloudServer.csproj.CopyComplete
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\obj\Release\CloudServer.exe
+C:\Users\СикировТ\Desktop\Clouds\CloudAppKursachVErsion\CloudServer\CloudServer\obj\Release\CloudServer.pdb
